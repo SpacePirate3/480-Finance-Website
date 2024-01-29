@@ -3,7 +3,7 @@ from datetime import datetime
 import matplotlib.pyplot as plt
 
 # Read the JSON file
-with open('aapl_data.json', 'r') as file:
+with open('aapl_data_compact.json', 'r') as file:
     aapl_data = json.load(file)
 
 # Extract the symbol
