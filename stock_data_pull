@@ -1,0 +1,254 @@
+from dotenv import load_dotenv
+import os
+import requests
+import mysql.connector
+import time
+
+# Load environment variables from .env file
+load_dotenv()
+
+# Database connection details
+API_KEY1 = os.getenv("API_KEY1")
+API_KEY2 = os.getenv("API_KEY2")
+DB_HOST = os.getenv("DB_HOST")
+DB_USER = os.getenv("DB_USER")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
+DB_NAME = os.getenv("DB_NAME")
+
+# Function to connect to the database
+def db_connect():
+    return mysql.connector.connect(
+        host=DB_HOST,
+        user=DB_USER,
+        password=DB_PASSWORD,
+        database=DB_NAME
+    )
+
+# Function to fetch and populate historical data for a given stock symbol
+def fetch_historical_data(symbol):
+    url = "https://alpha-vantage.p.rapidapi.com/query"
+    querystring = {"function":"TIME_SERIES_DAILY","symbol":symbol,"outputsize":"full","datatype":"json"}
+    headers = {
+        "X-RapidAPI-Key": API_KEY1,
+        "X-RapidAPI-Host": "alpha-vantage.p.rapidapi.com"
+    }
+    response = requests.get(url, headers=headers, params=querystring)
+    if response.status_code == 200:
+        data = response.json()
+        historical_data = data['Time Series (Daily)']
+        connection = db_connect()
+        cursor = connection.cursor()
+        insert_query = """
+        INSERT INTO historical_data (symbol, date, open, high, low, close, volume)
+        VALUES (%s, %s, %s, %s, %s, %s, %s)
+        ON DUPLICATE KEY UPDATE
+        open = VALUES(open),
+        high = VALUES(high),
+        low = VALUES(low),
+        close = VALUES(close),
+        volume = VALUES(volume);
+        """
+
+        for date, values in historical_data.items():
+            cursor.execute(insert_query, (
+                symbol,
+                date,
+                values['1. open'],
+                values['2. high'],
+                values['3. low'],
+                values['4. close'],
+                values['5. volume']
+            ))
+
+        connection.commit()
+        cursor.close()
+        connection.close()
+        print(f"Data for {symbol} has been populated.")
+    else:
+        print(f"Failed to fetch data for {symbol}")
+
+def fetch_daily_data(symbol):
+    # Connect to the database
+    connection = db_connect()
+    cursor = connection.cursor(buffered=True)
+
+    # Find the most recent date in the database for the symbol
+    cursor.execute("SELECT MAX(date) FROM historical_data WHERE symbol = %s", (symbol,))
+    result = cursor.fetchone()
+    latest_date_in_db = result[0] if result[0] else None
+
+    # Fetch the daily data from the API
+    url = "https://alpha-vantage.p.rapidapi.com/query"
+    querystring = {"function": "TIME_SERIES_DAILY", "symbol": symbol, "outputsize": "compact", "datatype": "json"}
+    headers = {
+        "X-RapidAPI-Key": API_KEY1,
+        "X-RapidAPI-Host": "alpha-vantage.p.rapidapi.com"
+    }
+    response = requests.get(url, headers=headers, params=querystring)
+    if response.status_code == 200:
+        data = response.json()
+        daily_data = data['Time Series (Daily)']
+
+        # Prepare the insert query
+        insert_query = """
+        INSERT INTO historical_data (symbol, date, open, high, low, close, volume)
+        VALUES (%s, %s, %s, %s, %s, %s, %s)
+        ON DUPLICATE KEY UPDATE
+        open = VALUES(open),
+        high = VALUES(high),
+        low = VALUES(low),
+        close = VALUES(close),
+        volume = VALUES(volume);
+        """
+
+        # Insert new data into the database
+        for date, values in daily_data.items():
+            if not latest_date_in_db or date > latest_date_in_db.strftime('%Y-%m-%d'):
+                cursor.execute(insert_query, (
+                    symbol,
+                    date,
+                    values['1. open'],
+                    values['2. high'],
+                    values['3. low'],
+                    values['4. close'],
+                    values['5. volume']
+                ))
+
+        connection.commit()
+    else:
+        print(f"Failed to fetch daily data for {symbol}")
+
+    cursor.close()
+    connection.close()
+    print(f"Daily data for {symbol} has been updated.")
+
+def fetch_stock_overview(symbol):
+    url = "https://alpha-vantage.p.rapidapi.com/query"
+    querystring = {"function": "Overview", "symbol": symbol, "datatype": "json"}
+    headers = {
+        "X-RapidAPI-Key": API_KEY1,
+        "X-RapidAPI-Host": "alpha-vantage.p.rapidapi.com"
+    }
+    response = requests.get(url, headers=headers, params=querystring)
+    if response.status_code == 200:
+        overview_data = response.json()
+        connection = db_connect()
+        cursor = connection.cursor()
+
+        # SQL query to insert or update the stock_overview data
+        upsert_query = """
+        INSERT INTO stock_overview (symbol, asset_type, name, description, cik, exchange, currency, 
+        country, sector, industry, address, fiscal_year_end, latest_quarter, market_capitalization, ebitda, 
+        pe_ratio, peg_ratio, book_value, dividend_per_share, dividend_yield, eps, revenue_per_share_ttm, profit_margin, 
+        operating_margin_ttm, return_on_assets_ttm, return_on_equity_ttm, revenue_ttm, gross_profit_ttm, diluted_eps_ttm, 
+        quarterly_earnings_growth_yoy, quarterly_revenue_growth_yoy, analyst_target_price, trailing_pe, forward_pe, 
+        price_to_sales_ratio_ttm, price_to_book_ratio, ev_to_revenue, ev_to_ebitda, beta, week_52_high, week_52_low, 
+        day_50_moving_average, day_200_moving_average, shares_outstanding, dividend_date, ex_dividend_date)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        ON DUPLICATE KEY UPDATE
+        asset_type=VALUES(asset_type), name=VALUES(name), description=VALUES(description), cik=VALUES(cik), 
+        exchange=VALUES(exchange), currency=VALUES(currency), country=VALUES(country), sector=VALUES(sector), 
+        industry=VALUES(industry), address=VALUES(address), fiscal_year_end=VALUES(fiscal_year_end), 
+        latest_quarter=VALUES(latest_quarter), market_capitalization=VALUES(market_capitalization), 
+        ebitda=VALUES(ebitda), pe_ratio=VALUES(pe_ratio), peg_ratio=VALUES(peg_ratio), 
+        book_value=VALUES(book_value), dividend_per_share=VALUES(dividend_per_share), 
+        dividend_yield=VALUES(dividend_yield), eps=VALUES(eps), revenue_per_share_ttm=VALUES(revenue_per_share_ttm), 
+        profit_margin=VALUES(profit_margin), operating_margin_ttm=VALUES(operating_margin_ttm), 
+        return_on_assets_ttm=VALUES(return_on_assets_ttm), return_on_equity_ttm=VALUES(return_on_equity_ttm), 
+        revenue_ttm=VALUES(revenue_ttm), gross_profit_ttm=VALUES(gross_profit_ttm), diluted_eps_ttm=VALUES(diluted_eps_ttm), 
+        quarterly_earnings_growth_yoy=VALUES(quarterly_earnings_growth_yoy), 
+        quarterly_revenue_growth_yoy=VALUES(quarterly_revenue_growth_yoy), analyst_target_price=VALUES(analyst_target_price), 
+        trailing_pe=VALUES(trailing_pe), forward_pe=VALUES(forward_pe), price_to_sales_ratio_ttm=VALUES(price_to_sales_ratio_ttm), 
+        price_to_book_ratio=VALUES(price_to_book_ratio), ev_to_revenue=VALUES(ev_to_revenue), ev_to_ebitda=VALUES(ev_to_ebitda), 
+        beta=VALUES(beta), week_52_high=VALUES(week_52_high), week_52_low=VALUES(week_52_low), 
+        day_50_moving_average=VALUES(day_50_moving_average), day_200_moving_average=VALUES(day_200_moving_average), shares_outstanding=VALUES(shares_outstanding), dividend_date=VALUES(dividend_date), ex_dividend_date=VALUES(ex_dividend_date);
+        """
+
+        # Execute the upsert query with overview data
+        cursor.execute(upsert_query, (
+            overview_data['Symbol'],
+            overview_data['AssetType'],
+            overview_data['Name'],
+            overview_data['Description'],
+            overview_data['CIK'],
+            overview_data['Exchange'],
+            overview_data['Currency'],
+            overview_data['Country'],
+            overview_data['Sector'],
+            overview_data['Industry'],
+            overview_data['Address'],
+            overview_data['FiscalYearEnd'],
+            overview_data['LatestQuarter'],
+            overview_data['MarketCapitalization'],
+            overview_data['EBITDA'],
+            None if overview_data['PERatio'] == 'None' else overview_data['PERatio'],
+            overview_data['PEGRatio'],
+            overview_data['BookValue'],
+            overview_data['DividendPerShare'],
+            overview_data['DividendYield'],
+            overview_data['EPS'],
+            overview_data['RevenuePerShareTTM'],
+            overview_data['ProfitMargin'],
+            overview_data['OperatingMarginTTM'],
+            overview_data['ReturnOnAssetsTTM'],
+            overview_data['ReturnOnEquityTTM'],
+            overview_data['RevenueTTM'],
+            overview_data['GrossProfitTTM'],
+            overview_data['DilutedEPSTTM'],
+            overview_data['QuarterlyEarningsGrowthYOY'],
+            overview_data['QuarterlyRevenueGrowthYOY'],
+            overview_data['AnalystTargetPrice'],
+            None if overview_data['TrailingPE'] == '-' else overview_data['TrailingPE'],
+            overview_data['ForwardPE'],
+            overview_data['PriceToSalesRatioTTM'],
+            overview_data['PriceToBookRatio'],
+            overview_data['EVToRevenue'],
+            overview_data['EVToEBITDA'],
+            overview_data['Beta'],
+            overview_data['52WeekHigh'],
+            overview_data['52WeekLow'],
+            overview_data['50DayMovingAverage'],
+            overview_data['200DayMovingAverage'],
+            overview_data['SharesOutstanding'],
+            # Check for 'None' and convert to None (Python's null equivalent)
+            None if overview_data['DividendDate'] == 'None' else overview_data['DividendDate'],
+            None if overview_data['ExDividendDate'] == 'None' else overview_data['ExDividendDate']
+        ))
+
+        connection.commit()
+        print(f"Overview data for {symbol} updated in the database.")
+    else:
+        print(f"Failed to fetch overview data for {symbol}")
+
+    cursor.close()
+    connection.close()
+    print(f"Overview for {symbol} has been updated.")
+
+# Main function to iterate through stocks and populate the database
+def main():
+    stocks = {
+    "Amazon": "AMZN",
+    "Apple": "AAPL",
+    "Dell": "DELL",
+    "GameStop": "GME",
+    "Google": "GOOGL",
+    "Intel": "INTC",
+    "Microsoft": "MSFT",
+    "Netflix": "NFLX",
+    "NVIDIA": "NVDA",
+    "Tesla": "TSLA",
+    "S&P Global Inc.": "SPGI",
+    "Dow Inc.": "DOW",
+    "Nasdaq, Inc": "NDAQ",
+}
+    for name, symbol in stocks.items():
+        print(f"Fetching data for {name} ({symbol})...")
+        # fetch_historical_data(symbol) # Only needs to be called once through the project duration
+        fetch_stock_overview(symbol) # Updates stock_overview table with most-recent day (not time).
+        time.sleep(12)
+        fetch_daily_data(symbol) # Updates historical_data table with most-recent day (not time).
+        time.sleep(12) # Wait 12 seconds (API Fetch Limit (5 per minute))
+
+
+if __name__ == "__main__":
+    main()
