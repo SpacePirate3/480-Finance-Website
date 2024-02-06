@@ -7,9 +7,12 @@ import time
 # Load environment variables from .env file
 load_dotenv()
 
+# API_KEY Management Initialization
+api_keys = [os.getenv("API_KEY1"), os.getenv("API_KEY2"), os.getenv("API_KEY3")]
+current_key_index = 0  # Start with the first API key
+calls_made_with_current_key = 0
+
 # Database connection details
-API_KEY1 = os.getenv("API_KEY1")
-API_KEY2 = os.getenv("API_KEY2")
 DB_HOST = os.getenv("DB_HOST")
 DB_USER = os.getenv("DB_USER")
 DB_PASSWORD = os.getenv("DB_PASSWORD")
@@ -26,13 +29,17 @@ def db_connect():
 
 # Function to fetch and populate historical data for a given stock symbol
 def fetch_historical_data(symbol):
+
+    global current_key_index, calls_made_with_current_key
+
     url = "https://alpha-vantage.p.rapidapi.com/query"
     querystring = {"function":"TIME_SERIES_DAILY","symbol":symbol,"outputsize":"full","datatype":"json"}
     headers = {
-        "X-RapidAPI-Key": API_KEY1,
+        "X-RapidAPI-Key": api_keys[current_key_index],
         "X-RapidAPI-Host": "alpha-vantage.p.rapidapi.com"
     }
     response = requests.get(url, headers=headers, params=querystring)
+
     if response.status_code == 200:
         data = response.json()
         historical_data = data['Time Series (Daily)']
@@ -61,13 +68,23 @@ def fetch_historical_data(symbol):
             ))
 
         connection.commit()
-        cursor.close()
-        connection.close()
         print(f"Data for {symbol} has been populated.")
     else:
         print(f"Failed to fetch data for {symbol}")
+    
+    # Logic to rotate the API key
+    calls_made_with_current_key += 1
+    if calls_made_with_current_key >= 5:
+        current_key_index = (current_key_index + 1) % len(api_keys)
+        calls_made_with_current_key = 0  # Reset the count for the new key
+    
+    cursor.close()
+    connection.close()
 
 def fetch_daily_data(symbol):
+
+    global current_key_index, calls_made_with_current_key
+
     # Connect to the database
     connection = db_connect()
     cursor = connection.cursor(buffered=True)
@@ -81,7 +98,7 @@ def fetch_daily_data(symbol):
     url = "https://alpha-vantage.p.rapidapi.com/query"
     querystring = {"function": "TIME_SERIES_DAILY", "symbol": symbol, "outputsize": "compact", "datatype": "json"}
     headers = {
-        "X-RapidAPI-Key": API_KEY1,
+        "X-RapidAPI-Key": api_keys[current_key_index],
         "X-RapidAPI-Host": "alpha-vantage.p.rapidapi.com"
     }
     response = requests.get(url, headers=headers, params=querystring)
@@ -114,19 +131,28 @@ def fetch_daily_data(symbol):
                     values['5. volume']
                 ))
 
+        print(f"Daily data for {symbol} has been updated.")
         connection.commit()
     else:
         print(f"Failed to fetch daily data for {symbol}")
+    
+    # Logic to rotate the API key
+    calls_made_with_current_key += 1
+    if calls_made_with_current_key >= 5:
+        current_key_index = (current_key_index + 1) % len(api_keys)
+        calls_made_with_current_key = 0  # Reset the count for the new key
 
     cursor.close()
     connection.close()
-    print(f"Daily data for {symbol} has been updated.")
 
 def fetch_stock_overview(symbol):
+
+    global current_key_index, calls_made_with_current_key
+
     url = "https://alpha-vantage.p.rapidapi.com/query"
     querystring = {"function": "Overview", "symbol": symbol, "datatype": "json"}
     headers = {
-        "X-RapidAPI-Key": API_KEY1,
+        "X-RapidAPI-Key": api_keys[current_key_index],
         "X-RapidAPI-Host": "alpha-vantage.p.rapidapi.com"
     }
     response = requests.get(url, headers=headers, params=querystring)
@@ -220,11 +246,75 @@ def fetch_stock_overview(symbol):
     else:
         print(f"Failed to fetch overview data for {symbol}")
 
+    # Logic to rotate the API key
+    calls_made_with_current_key += 1
+    if calls_made_with_current_key >= 5:
+        current_key_index = (current_key_index + 1) % len(api_keys)
+        calls_made_with_current_key = 0  # Reset the count for the new key
+
     cursor.close()
     connection.close()
-    print(f"Overview for {symbol} has been updated.")
 
-# Main function to iterate through stocks and populate the database
+def fetch_intraday_data(symbol):
+
+    global current_key_index, calls_made_with_current_key
+
+    connection = db_connect()
+    cursor = connection.cursor()
+
+    # Clear existing records from intraday_data table
+    cursor.execute("DELETE FROM intraday_data WHERE symbol = %s", (symbol,))
+    connection.commit()
+
+    # Fetch and insert new intraday data as before
+    url = "https://alpha-vantage.p.rapidapi.com/query"
+    querystring = {
+        "function": "TIME_SERIES_INTRADAY",
+        "symbol": symbol,
+        "interval": "1min",
+        "outputsize": "full",
+        "datatype": "json"
+    }
+    headers = {
+        "X-RapidAPI-Key": api_keys[current_key_index],
+        "X-RapidAPI-Host": "alpha-vantage.p.rapidapi.com"
+    }
+    response = requests.get(url, headers=headers, params=querystring)
+    if response.status_code == 200:
+        data = response.json()
+        intraday_data = data['Time Series (1min)']  # Adjust based on the actual key in response
+
+        insert_query = """
+        INSERT INTO intraday_data (symbol, date_time, open, high, low, close, volume)
+        VALUES (%s, %s, %s, %s, %s, %s, %s);
+        """
+
+        for date_time, values in intraday_data.items():
+            cursor.execute(insert_query, (
+                symbol,
+                date_time,
+                values['1. open'],
+                values['2. high'],
+                values['3. low'],
+                values['4. close'],
+                values['5. volume']
+            ))
+
+        connection.commit()
+        print(f"Intraday data for {symbol} has been updated.")
+    else:
+        print(f"Failed to fetch intraday data for {symbol}")
+
+    # Logic to rotate the API key
+    calls_made_with_current_key += 1
+    if calls_made_with_current_key >= 5:
+        current_key_index = (current_key_index + 1) % len(api_keys)
+        calls_made_with_current_key = 0  # Reset the count for the new key
+
+    cursor.close()
+    connection.close()
+
+# Main function to iterate through stocks and populate the database (Will not be used in project implementation)
 def main():
     stocks = {
     "Amazon": "AMZN",
@@ -241,14 +331,29 @@ def main():
     "Dow Inc.": "DOW",
     "Nasdaq, Inc": "NDAQ",
 }
+    
+    current_call_count = 0
+
     for name, symbol in stocks.items():
         print(f"Fetching data for {name} ({symbol})...")
-        # fetch_historical_data(symbol) # Only needs to be called once through the project duration
-        fetch_stock_overview(symbol) # Updates stock_overview table with most-recent day (not time).
-        time.sleep(12)
-        fetch_daily_data(symbol) # Updates historical_data table with most-recent day (not time).
-        time.sleep(12) # Wait 12 seconds (API Fetch Limit (5 per minute))
 
+        # Only needs to be called once throughout the project duration
+        """
+        fetch_historical_data(symbol)
+        time.sleep(60)
+        """
+
+        fetch_intraday_data(symbol) # Drops information from intraday_table and appends new data.
+        fetch_stock_overview(symbol) # Updates stock_overview table with most-recent day.
+        fetch_daily_data(symbol) # Updates historical_data table with most-recent day.
+        
+        current_call_count +=3 # Increment by the number of calls made
+
+        # After every 15 calls, pause for 60 seconds
+        if current_call_count >= 15:
+            print("60 second pause (API call limits)")
+            time.sleep(60)
+            current_call_count = 0 # Reset call count
 
 if __name__ == "__main__":
     main()
