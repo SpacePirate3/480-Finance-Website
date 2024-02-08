@@ -9,34 +9,6 @@ DROP TABLE IF EXISTS intraday_data;
 DROP TABLE IF EXISTS historical_data;
 DROP TABLE IF EXISTS stock_overview;
 
--- Creation of the intraday_data table
-CREATE TABLE intraday_data (
-    ID INT,
-    symbol VARCHAR(10) NOT NULL,
-    date_time DATETIME NOT NULL,
-    open DECIMAL(10, 2),
-    high DECIMAL(10, 2),
-    low DECIMAL(10, 2),
-    close DECIMAL(10, 2),
-    volume BIGINT,
-    FOREIGN KEY (ID) REFERENCES stock_overview(ID),
-    PRIMARY KEY (ID, date_time)
-);
-
--- Creation of the historical_data table
-CREATE TABLE historical_data (
-    ID INT,
-    symbol VARCHAR(10) NOT NULL,
-    date DATE NOT NULL,
-    open DECIMAL(10, 2),
-    high DECIMAL(10, 2),
-    low DECIMAL(10, 2),
-    close DECIMAL(10, 2),
-    volume BIGINT,
-    FOREIGN KEY (ID) REFERENCES stock_overview(ID),
-    PRIMARY KEY (ID, date)
-);
-
 -- Creation of the stock_overview table with expanded fields
 CREATE TABLE stock_overview (
     ID INT AUTO_INCREMENT PRIMARY KEY,
@@ -86,4 +58,32 @@ CREATE TABLE stock_overview (
     shares_outstanding BIGINT,
     dividend_date DATE,
     ex_dividend_date DATE
+);
+
+-- Creation of the intraday_data table
+CREATE TABLE intraday_data (
+    ID INT,
+    symbol VARCHAR(10) NOT NULL,
+    date_time DATETIME NOT NULL,
+    open DECIMAL(10, 2),
+    high DECIMAL(10, 2),
+    low DECIMAL(10, 2),
+    close DECIMAL(10, 2),
+    volume BIGINT,
+    FOREIGN KEY (ID) REFERENCES stock_overview(ID),
+    PRIMARY KEY (ID, date_time)
+);
+
+-- Creation of the historical_data table
+CREATE TABLE historical_data (
+    ID INT,
+    symbol VARCHAR(10) NOT NULL,
+    date DATE NOT NULL,
+    open DECIMAL(10, 2),
+    high DECIMAL(10, 2),
+    low DECIMAL(10, 2),
+    close DECIMAL(10, 2),
+    volume BIGINT,
+    FOREIGN KEY (ID) REFERENCES stock_overview(ID),
+    PRIMARY KEY (ID, date)
 );
