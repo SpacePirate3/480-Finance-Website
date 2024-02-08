@@ -19,7 +19,6 @@ CREATE TABLE intraday_data (
     low DECIMAL(10, 2),
     close DECIMAL(10, 2),
     volume BIGINT,
-    PRIMARY KEY (symbol, date_time),
     FOREIGN KEY (ID) REFERENCES stock_overview(ID),
     PRIMARY KEY (ID, date_time)
 );
