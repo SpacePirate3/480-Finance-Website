@@ -27,6 +27,13 @@ def db_connect():
         database=DB_NAME
     )
 
+# Function to convert 'None' strings to None for all keys except 'Symbol'
+def convert_none_values(data):
+    return {
+        key: None if (value == 'None' or value == '-') and key != 'Symbol' else value
+        for key, value in data.items()
+    }
+
 # Function to fetch and populate historical data for a given stock symbol
 def fetch_historical_data(symbol):
 
@@ -45,9 +52,18 @@ def fetch_historical_data(symbol):
         historical_data = data['Time Series (Daily)']
         connection = db_connect()
         cursor = connection.cursor()
+
+        # Fetch ID for symbol from stock_overview table
+        cursor.execute("SELECT ID FROM stock_overview WHERE symbol = %s", (symbol,))
+        result = cursor.fetchone()
+        if result is None:
+            print(f"No ID found for symbol {symbol}. Ensure stock_overview is populated first.")
+            return  # Exit the function if no ID found
+        stock_id = result[0]
+
         insert_query = """
-        INSERT INTO historical_data (symbol, date, open, high, low, close, volume)
-        VALUES (%s, %s, %s, %s, %s, %s, %s)
+        INSERT INTO historical_data (ID, symbol, date, open, high, low, close, volume)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
         ON DUPLICATE KEY UPDATE
         open = VALUES(open),
         high = VALUES(high),
@@ -58,6 +74,7 @@ def fetch_historical_data(symbol):
 
         for date, values in historical_data.items():
             cursor.execute(insert_query, (
+                stock_id,
                 symbol,
                 date,
                 values['1. open'],
@@ -89,8 +106,17 @@ def fetch_daily_data(symbol):
     connection = db_connect()
     cursor = connection.cursor(buffered=True)
 
+    # Fetch ID for symbol from stock_overview table
+    cursor.execute("SELECT ID FROM stock_overview WHERE symbol = %s", (symbol,))
+    result = cursor.fetchone()
+    if result is None:
+        print(f"No ID found for symbol {symbol}. Ensure stock_overview is populated first.")
+        return  # Exit the function if no ID found
+    stock_id = result[0]
+
+
     # Find the most recent date in the database for the symbol
-    cursor.execute("SELECT MAX(date) FROM historical_data WHERE symbol = %s", (symbol,))
+    cursor.execute("SELECT MAX(date) FROM historical_data WHERE ID = %s", (stock_id,))
     result = cursor.fetchone()
     latest_date_in_db = result[0] if result[0] else None
 
@@ -108,8 +134,8 @@ def fetch_daily_data(symbol):
 
         # Prepare the insert query
         insert_query = """
-        INSERT INTO historical_data (symbol, date, open, high, low, close, volume)
-        VALUES (%s, %s, %s, %s, %s, %s, %s)
+        INSERT INTO historical_data (ID, symbol, date, open, high, low, close, volume)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
         ON DUPLICATE KEY UPDATE
         open = VALUES(open),
         high = VALUES(high),
@@ -122,6 +148,7 @@ def fetch_daily_data(symbol):
         for date, values in daily_data.items():
             if not latest_date_in_db or date > latest_date_in_db.strftime('%Y-%m-%d'):
                 cursor.execute(insert_query, (
+                    stock_id,
                     symbol,
                     date,
                     values['1. open'],
@@ -190,55 +217,57 @@ def fetch_stock_overview(symbol):
         day_50_moving_average=VALUES(day_50_moving_average), day_200_moving_average=VALUES(day_200_moving_average), shares_outstanding=VALUES(shares_outstanding), dividend_date=VALUES(dividend_date), ex_dividend_date=VALUES(ex_dividend_date);
         """
 
+        # Convert 'None' strings to None for the overview_data, excluding 'Symbol'
+        converted_data = convert_none_values(overview_data)
+
         # Execute the upsert query with overview data
         cursor.execute(upsert_query, (
-            overview_data['Symbol'],
-            overview_data['AssetType'],
-            overview_data['Name'],
-            overview_data['Description'],
-            overview_data['CIK'],
-            overview_data['Exchange'],
-            overview_data['Currency'],
-            overview_data['Country'],
-            overview_data['Sector'],
-            overview_data['Industry'],
-            overview_data['Address'],
-            overview_data['FiscalYearEnd'],
-            overview_data['LatestQuarter'],
-            overview_data['MarketCapitalization'],
-            overview_data['EBITDA'],
-            None if overview_data['PERatio'] == 'None' else overview_data['PERatio'],
-            overview_data['PEGRatio'],
-            overview_data['BookValue'],
-            overview_data['DividendPerShare'],
-            overview_data['DividendYield'],
-            overview_data['EPS'],
-            overview_data['RevenuePerShareTTM'],
-            overview_data['ProfitMargin'],
-            overview_data['OperatingMarginTTM'],
-            overview_data['ReturnOnAssetsTTM'],
-            overview_data['ReturnOnEquityTTM'],
-            overview_data['RevenueTTM'],
-            overview_data['GrossProfitTTM'],
-            overview_data['DilutedEPSTTM'],
-            overview_data['QuarterlyEarningsGrowthYOY'],
-            overview_data['QuarterlyRevenueGrowthYOY'],
-            overview_data['AnalystTargetPrice'],
-            None if overview_data['TrailingPE'] == '-' else overview_data['TrailingPE'],
-            overview_data['ForwardPE'],
-            overview_data['PriceToSalesRatioTTM'],
-            overview_data['PriceToBookRatio'],
-            overview_data['EVToRevenue'],
-            overview_data['EVToEBITDA'],
-            overview_data['Beta'],
-            overview_data['52WeekHigh'],
-            overview_data['52WeekLow'],
-            overview_data['50DayMovingAverage'],
-            overview_data['200DayMovingAverage'],
-            overview_data['SharesOutstanding'],
-            # Check for 'None' and convert to None (Python's null equivalent)
-            None if overview_data['DividendDate'] == 'None' else overview_data['DividendDate'],
-            None if overview_data['ExDividendDate'] == 'None' else overview_data['ExDividendDate']
+            converted_data['Symbol'],
+            converted_data['AssetType'],
+            converted_data['Name'],
+            converted_data['Description'],
+            converted_data['CIK'],
+            converted_data['Exchange'],
+            converted_data['Currency'],
+            converted_data['Country'],
+            converted_data['Sector'],
+            converted_data['Industry'],
+            converted_data['Address'],
+            converted_data['FiscalYearEnd'],
+            converted_data['LatestQuarter'],
+            converted_data['MarketCapitalization'],
+            converted_data['EBITDA'],
+            converted_data['PERatio'],  # Note: Ensure conversion logic matches original intent
+            converted_data['PEGRatio'],
+            converted_data['BookValue'],
+            converted_data['DividendPerShare'],
+            converted_data['DividendYield'],
+            converted_data['EPS'],
+            converted_data['RevenuePerShareTTM'],
+            converted_data['ProfitMargin'],
+            converted_data['OperatingMarginTTM'],
+            converted_data['ReturnOnAssetsTTM'],
+            converted_data['ReturnOnEquityTTM'],
+            converted_data['RevenueTTM'],
+            converted_data['GrossProfitTTM'],
+            converted_data['DilutedEPSTTM'],
+            converted_data['QuarterlyEarningsGrowthYOY'],
+            converted_data['QuarterlyRevenueGrowthYOY'],
+            converted_data['AnalystTargetPrice'],
+            converted_data['TrailingPE'],
+            converted_data['ForwardPE'],
+            converted_data['PriceToSalesRatioTTM'],
+            converted_data['PriceToBookRatio'],
+            converted_data['EVToRevenue'],
+            converted_data['EVToEBITDA'],
+            converted_data['Beta'],
+            converted_data['52WeekHigh'],
+            converted_data['52WeekLow'],
+            converted_data['50DayMovingAverage'],
+            converted_data['200DayMovingAverage'],
+            converted_data['SharesOutstanding'],
+            converted_data['DividendDate'],
+            converted_data['ExDividendDate']
         ))
 
         connection.commit()
@@ -262,8 +291,16 @@ def fetch_intraday_data(symbol):
     connection = db_connect()
     cursor = connection.cursor()
 
+    # Fetch ID for symbol from stock_overview table
+    cursor.execute("SELECT ID FROM stock_overview WHERE symbol = %s", (symbol,))
+    result = cursor.fetchone()
+    if result is None:
+        print(f"No ID found for symbol {symbol}. Ensure stock_overview is populated first.")
+        return  # Exit the function if no ID found
+    stock_id = result[0]
+
     # Clear existing records from intraday_data table
-    cursor.execute("DELETE FROM intraday_data WHERE symbol = %s", (symbol,))
+    cursor.execute("DELETE FROM intraday_data WHERE ID = %s", (stock_id,))
     connection.commit()
 
     # Fetch and insert new intraday data as before
@@ -285,12 +322,13 @@ def fetch_intraday_data(symbol):
         intraday_data = data['Time Series (1min)']  # Adjust based on the actual key in response
 
         insert_query = """
-        INSERT INTO intraday_data (symbol, date_time, open, high, low, close, volume)
-        VALUES (%s, %s, %s, %s, %s, %s, %s);
+        INSERT INTO intraday_data (ID, symbol, date_time, open, high, low, close, volume)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
         """
 
         for date_time, values in intraday_data.items():
             cursor.execute(insert_query, (
+                stock_id,
                 symbol,
                 date_time,
                 values['1. open'],
@@ -337,15 +375,15 @@ def main():
     for name, symbol in stocks.items():
         print(f"Fetching data for {name} ({symbol})...")
 
+        # Must be called fist before historical data can be called
+        # fetch_stock_overview(symbol) # Updates stock_overview table with most-recent day.
+
         # Only needs to be called once throughout the project duration
-        """
+        
         fetch_historical_data(symbol)
-        time.sleep(60)
-        """
 
         fetch_intraday_data(symbol) # Drops information from intraday_table and appends new data.
-        fetch_stock_overview(symbol) # Updates stock_overview table with most-recent day.
-        fetch_daily_data(symbol) # Updates historical_data table with most-recent day.
+        #fetch_daily_data(symbol) # Updates historical_data table with most-recent day.
         
         current_call_count +=3 # Increment by the number of calls made
 
