@@ -11,6 +11,7 @@ DROP TABLE IF EXISTS stock_overview;
 
 -- Creation of the intraday_data table
 CREATE TABLE intraday_data (
+    ID INT,
     symbol VARCHAR(10) NOT NULL,
     date_time DATETIME NOT NULL,
     open DECIMAL(10, 2),
@@ -18,11 +19,14 @@ CREATE TABLE intraday_data (
     low DECIMAL(10, 2),
     close DECIMAL(10, 2),
     volume BIGINT,
-    PRIMARY KEY (symbol, date_time)
+    PRIMARY KEY (symbol, date_time),
+    FOREIGN KEY (ID) REFERENCES stock_overview(ID),
+    PRIMARY KEY (ID, date_time)
 );
 
 -- Creation of the historical_data table
 CREATE TABLE historical_data (
+    ID INT,
     symbol VARCHAR(10) NOT NULL,
     date DATE NOT NULL,
     open DECIMAL(10, 2),
@@ -30,12 +34,14 @@ CREATE TABLE historical_data (
     low DECIMAL(10, 2),
     close DECIMAL(10, 2),
     volume BIGINT,
-    PRIMARY KEY (symbol, date)
+    FOREIGN KEY (ID) REFERENCES stock_overview(ID),
+    PRIMARY KEY (ID, date)
 );
 
 -- Creation of the stock_overview table with expanded fields
 CREATE TABLE stock_overview (
-    symbol VARCHAR(10) NOT NULL PRIMARY KEY,
+    ID INT AUTO_INCREMENT PRIMARY KEY,
+    symbol VARCHAR(10) NOT NULL UNIQUE,
     asset_type VARCHAR(50),
     name VARCHAR(255),
     description TEXT,
