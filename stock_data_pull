@@ -7,19 +7,24 @@ import time
 # Load environment variables from .env file
 load_dotenv()
 
-# API_KEY Management Initialization
+# API keys for accessing the external data source.
 api_keys = [os.getenv("API_KEY1"), os.getenv("API_KEY2"), os.getenv("API_KEY3")]
 current_key_index = 0  # Start with the first API key
 calls_made_with_current_key = 0
 
-# Database connection details
+# Database connection details, loaded from environment variables.
 DB_HOST = os.getenv("DB_HOST")
 DB_USER = os.getenv("DB_USER")
 DB_PASSWORD = os.getenv("DB_PASSWORD")
 DB_NAME = os.getenv("DB_NAME")
 
-# Function to connect to the database
 def db_connect():
+    """
+    Establishes a connection to the database using credentials loaded from environment variables.
+
+    Returns:
+        A MySQL connection object.
+    """
     return mysql.connector.connect(
         host=DB_HOST,
         user=DB_USER,
@@ -27,253 +32,219 @@ def db_connect():
         database=DB_NAME
     )
 
-# Function to convert 'None' strings to None for all keys except 'Symbol'
 def convert_none_values(data):
+    """
+    Converts 'None' or '-' string values to None type for all keys except 'Symbol' in a dictionary.
+
+    Parameters:
+        data (dict): The dictionary whose values need to be converted.
+    Returns:
+        dict: The dictionary with 'None' or '-' values converted to None type.
+    """
     return {
         key: None if (value == 'None' or value == '-') and key != 'Symbol' else value
         for key, value in data.items()
     }
 
-# Function to fetch and populate historical data for a given stock symbol
-def fetch_historical_data(symbol):
+def fetch_stock_data(symbol, fetch_type="historical", interval_min=1):
+    """
+    Fetches and updates stock data for a given symbol. Supports historical, daily, and intraday data fetching.
 
+    Parameters:
+        symbol (str): The stock symbol for which to fetch the data.
+        fetch_type (str): The type of data to fetch - "historical", "daily", or "intraday". Default is "historical".
+        interval_min (int): The time interval in minutes for intraday data fetching. Default is 1 minute.
+    """
     global current_key_index, calls_made_with_current_key
-
     url = "https://alpha-vantage.p.rapidapi.com/query"
-    querystring = {"function":"TIME_SERIES_DAILY","symbol":symbol,"outputsize":"full","datatype":"json"}
-    headers = {
-        "X-RapidAPI-Key": api_keys[current_key_index],
-        "X-RapidAPI-Host": "alpha-vantage.p.rapidapi.com"
-    }
-    response = requests.get(url, headers=headers, params=querystring)
 
-    if response.status_code == 200:
-        data = response.json()
-        historical_data = data['Time Series (Daily)']
-        connection = db_connect()
-        cursor = connection.cursor()
+    connection = None
+    cursor = None
+    try:
+        # Setup for API request
+        if fetch_type in ["historical", "daily"]:
+            function = "TIME_SERIES_DAILY"
+            output_size = "full" if fetch_type == "historical" else "compact"
+            querystring = {
+                "function": function,
+                "symbol": symbol,
+                "outputsize": output_size,
+                "datatype": "json"
+            }
+        elif fetch_type == "intraday":
+            function = "TIME_SERIES_INTRADAY"
+            interval_str = f"{interval_min}min" # Format interval as a string, i.e. "1min".
+            output_size = "compact"  # Always use compact for intraday
+            querystring = {
+                "function": function,
+                "symbol": symbol,
+                "interval": interval_str,
+                "outputsize": output_size,
+                "datatype": "json"
+            }
 
-        # Fetch ID for symbol from stock_overview table
-        cursor.execute("SELECT ID FROM stock_overview WHERE symbol = %s", (symbol,))
-        result = cursor.fetchone()
-        if result is None:
-            print(f"No ID found for symbol {symbol}. Ensure stock_overview is populated first.")
-            return  # Exit the function if no ID found
-        stock_id = result[0]
+        headers = {
+            "X-RapidAPI-Key": api_keys[current_key_index],
+            "X-RapidAPI-Host": "alpha-vantage.p.rapidapi.com"
+        }
 
-        insert_query = """
-        INSERT INTO historical_data (ID, symbol, date, open, high, low, close, volume)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-        ON DUPLICATE KEY UPDATE
-        open = VALUES(open),
-        high = VALUES(high),
-        low = VALUES(low),
-        close = VALUES(close),
-        volume = VALUES(volume);
-        """
+        response = requests.get(url, headers=headers, params=querystring)
 
-        for date, values in historical_data.items():
-            cursor.execute(insert_query, (
-                stock_id,
-                symbol,
-                date,
-                values['1. open'],
-                values['2. high'],
-                values['3. low'],
-                values['4. close'],
-                values['5. volume']
-            ))
+        if response.status_code == 200:
+            data = response.json()
 
-        connection.commit()
-        print(f"Data for {symbol} has been populated.")
-    else:
-        print(f"Failed to fetch data for {symbol}")
-    
-    # Logic to rotate the API key
-    calls_made_with_current_key += 1
-    if calls_made_with_current_key >= 5:
-        current_key_index = (current_key_index + 1) % len(api_keys)
-        calls_made_with_current_key = 0  # Reset the count for the new key
-    
-    cursor.close()
-    connection.close()
+            # Determine the key for data extraction based on fetch_type
+            data_key = f"Time Series ({interval_str})" if fetch_type == "intraday" else "Time Series (Daily)"
+            stock_data = data.get(data_key, {})
 
-def fetch_daily_data(symbol):
+            connection = db_connect()
+            cursor = connection.cursor()
 
-    global current_key_index, calls_made_with_current_key
+            # Ensure the stock symbol exists in the overview table
+            cursor.execute("SELECT ID FROM stock_overview WHERE symbol = %s", (symbol,))
+            result = cursor.fetchone()
+            if not result:
+                print(f"No ID found for symbol {symbol}. Ensure stock_overview is populated first.")
+                cursor.close()
+                connection.close()
+                return
 
-    # Connect to the database
-    connection = db_connect()
-    cursor = connection.cursor(buffered=True)
+            stock_id = result[0]
 
-    # Fetch ID for symbol from stock_overview table
-    cursor.execute("SELECT ID FROM stock_overview WHERE symbol = %s", (symbol,))
-    result = cursor.fetchone()
-    if result is None:
-        print(f"No ID found for symbol {symbol}. Ensure stock_overview is populated first.")
-        return  # Exit the function if no ID found
-    stock_id = result[0]
+            if fetch_type == "intraday":
+                # Clear existing intraday records for the symbol
+                cursor.execute("DELETE FROM intraday_data WHERE ID = %s", (stock_id,))
+                connection.commit()
 
+            # Prepare the database insert/update query
+            table_name = "intraday_data" if fetch_type == "intraday" else "historical_data"
+            upsert_query = f"""
+            INSERT INTO {table_name} (
+                ID, symbol, date, open, high, low, close, volume
+            )
+            VALUES (
+                %s, %s, %s, %s, %s, %s, %s, %s
+            )
+            ON DUPLICATE KEY UPDATE
+                open = VALUES(open), high = VALUES(high), low = VALUES(low),
+                close = VALUES(close), volume = VALUES(volume);
+            """
 
-    # Find the most recent date in the database for the symbol
-    cursor.execute("SELECT MAX(date) FROM historical_data WHERE ID = %s", (stock_id,))
-    result = cursor.fetchone()
-    latest_date_in_db = result[0] if result[0] else None
-
-    # Fetch the daily data from the API
-    url = "https://alpha-vantage.p.rapidapi.com/query"
-    querystring = {"function": "TIME_SERIES_DAILY", "symbol": symbol, "outputsize": "compact", "datatype": "json"}
-    headers = {
-        "X-RapidAPI-Key": api_keys[current_key_index],
-        "X-RapidAPI-Host": "alpha-vantage.p.rapidapi.com"
-    }
-    response = requests.get(url, headers=headers, params=querystring)
-    if response.status_code == 200:
-        data = response.json()
-        daily_data = data['Time Series (Daily)']
-
-        # Prepare the insert query
-        insert_query = """
-        INSERT INTO historical_data (ID, symbol, date, open, high, low, close, volume)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-        ON DUPLICATE KEY UPDATE
-        open = VALUES(open),
-        high = VALUES(high),
-        low = VALUES(low),
-        close = VALUES(close),
-        volume = VALUES(volume);
-        """
-
-        # Insert new data into the database
-        for date, values in daily_data.items():
-            if not latest_date_in_db or date > latest_date_in_db.strftime('%Y-%m-%d'):
-                cursor.execute(insert_query, (
-                    stock_id,
-                    symbol,
-                    date,
-                    values['1. open'],
+            # Insert or update the stock data
+            for date, values in stock_data.items():
+                cursor.execute(upsert_query, (
+                    stock_id, 
+                    symbol, 
+                    date, 
+                    values['1. open'], 
                     values['2. high'],
-                    values['3. low'],
-                    values['4. close'],
+                    values['3. low'], 
+                    values['4. close'], 
                     values['5. volume']
                 ))
 
-        print(f"Daily data for {symbol} has been updated.")
-        connection.commit()
-    else:
-        print(f"Failed to fetch daily data for {symbol}")
+            connection.commit()
+            print(f"{fetch_type.capitalize()} data for {symbol} has been updated.")
+        else:
+            print(f"Failed to fetch {fetch_type} data for {symbol}")
+
+    except Exception as e:
+        print(f"An error occured: {e}")
+    finally:
+        if cursor:
+            cursor.close()
+        if connection:
+            connection.close()
     
-    # Logic to rotate the API key
+    # API key rotation logic
     calls_made_with_current_key += 1
     if calls_made_with_current_key >= 5:
         current_key_index = (current_key_index + 1) % len(api_keys)
-        calls_made_with_current_key = 0  # Reset the count for the new key
-
-    cursor.close()
-    connection.close()
+        calls_made_with_current_key = 0
 
 def fetch_stock_overview(symbol):
+    """
+    Fetches and updates the stock overview information for a given symbol.
 
+    Parameters:
+        symbol (str): The stock symbol for which to fetch the overview information.
+    """
     global current_key_index, calls_made_with_current_key
-
     url = "https://alpha-vantage.p.rapidapi.com/query"
-    querystring = {"function": "Overview", "symbol": symbol, "datatype": "json"}
-    headers = {
-        "X-RapidAPI-Key": api_keys[current_key_index],
-        "X-RapidAPI-Host": "alpha-vantage.p.rapidapi.com"
-    }
-    response = requests.get(url, headers=headers, params=querystring)
-    if response.status_code == 200:
-        overview_data = response.json()
-        connection = db_connect()
-        cursor = connection.cursor()
 
-        # SQL query to insert or update the stock_overview data
-        upsert_query = """
-        INSERT INTO stock_overview (symbol, asset_type, name, description, cik, exchange, currency, 
-        country, sector, industry, address, fiscal_year_end, latest_quarter, market_capitalization, ebitda, 
-        pe_ratio, peg_ratio, book_value, dividend_per_share, dividend_yield, eps, revenue_per_share_ttm, profit_margin, 
-        operating_margin_ttm, return_on_assets_ttm, return_on_equity_ttm, revenue_ttm, gross_profit_ttm, diluted_eps_ttm, 
-        quarterly_earnings_growth_yoy, quarterly_revenue_growth_yoy, analyst_target_price, trailing_pe, forward_pe, 
-        price_to_sales_ratio_ttm, price_to_book_ratio, ev_to_revenue, ev_to_ebitda, beta, week_52_high, week_52_low, 
-        day_50_moving_average, day_200_moving_average, shares_outstanding, dividend_date, ex_dividend_date)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-        ON DUPLICATE KEY UPDATE
-        asset_type=VALUES(asset_type), name=VALUES(name), description=VALUES(description), cik=VALUES(cik), 
-        exchange=VALUES(exchange), currency=VALUES(currency), country=VALUES(country), sector=VALUES(sector), 
-        industry=VALUES(industry), address=VALUES(address), fiscal_year_end=VALUES(fiscal_year_end), 
-        latest_quarter=VALUES(latest_quarter), market_capitalization=VALUES(market_capitalization), 
-        ebitda=VALUES(ebitda), pe_ratio=VALUES(pe_ratio), peg_ratio=VALUES(peg_ratio), 
-        book_value=VALUES(book_value), dividend_per_share=VALUES(dividend_per_share), 
-        dividend_yield=VALUES(dividend_yield), eps=VALUES(eps), revenue_per_share_ttm=VALUES(revenue_per_share_ttm), 
-        profit_margin=VALUES(profit_margin), operating_margin_ttm=VALUES(operating_margin_ttm), 
-        return_on_assets_ttm=VALUES(return_on_assets_ttm), return_on_equity_ttm=VALUES(return_on_equity_ttm), 
-        revenue_ttm=VALUES(revenue_ttm), gross_profit_ttm=VALUES(gross_profit_ttm), diluted_eps_ttm=VALUES(diluted_eps_ttm), 
-        quarterly_earnings_growth_yoy=VALUES(quarterly_earnings_growth_yoy), 
-        quarterly_revenue_growth_yoy=VALUES(quarterly_revenue_growth_yoy), analyst_target_price=VALUES(analyst_target_price), 
-        trailing_pe=VALUES(trailing_pe), forward_pe=VALUES(forward_pe), price_to_sales_ratio_ttm=VALUES(price_to_sales_ratio_ttm), 
-        price_to_book_ratio=VALUES(price_to_book_ratio), ev_to_revenue=VALUES(ev_to_revenue), ev_to_ebitda=VALUES(ev_to_ebitda), 
-        beta=VALUES(beta), week_52_high=VALUES(week_52_high), week_52_low=VALUES(week_52_low), 
-        day_50_moving_average=VALUES(day_50_moving_average), day_200_moving_average=VALUES(day_200_moving_average), shares_outstanding=VALUES(shares_outstanding), dividend_date=VALUES(dividend_date), ex_dividend_date=VALUES(ex_dividend_date);
-        """
+    connection = None
+    cursor = None
+    try:
+        querystring = {"function": "Overview", "symbol": symbol, "datatype": "json"}
+        headers = {
+            "X-RapidAPI-Key": api_keys[current_key_index],
+            "X-RapidAPI-Host": "alpha-vantage.p.rapidapi.com"
+        }
+        response = requests.get(url, headers=headers, params=querystring)
+        if response.status_code == 200:
+            overview_data = response.json()
+            connection = db_connect()
+            cursor = connection.cursor()
 
-        # Convert 'None' strings to None for the overview_data, excluding 'Symbol'
-        converted_data = convert_none_values(overview_data)
+            # SQL query to insert or update the stock_overview data
+            upsert_query = """
+            INSERT INTO stock_overview (
+                symbol, asset_type, name, description, cik, exchange, currency, country, sector, industry, address, 
+                fiscal_year_end, latest_quarter, market_capitalization, ebitda, pe_ratio, peg_ratio, book_value, 
+                dividend_per_share, dividend_yield, eps, revenue_per_share_ttm, profit_margin, operating_margin_ttm, 
+                return_on_assets_ttm, return_on_equity_ttm, revenue_ttm, gross_profit_ttm, diluted_eps_ttm, 
+                quarterly_earnings_growth_yoy, quarterly_revenue_growth_yoy, analyst_target_price, trailing_pe, 
+                forward_pe, price_to_sales_ratio_ttm, price_to_book_ratio, ev_to_revenue, ev_to_ebitda, beta, 
+                week_52_high, week_52_low, day_50_moving_average, day_200_moving_average, shares_outstanding, 
+                dividend_date, ex_dividend_date
+            )
+            VALUES (
+                %(Symbol)s, %(AssetType)s, %(Name)s, %(Description)s, %(CIK)s, %(Exchange)s, %(Currency)s, %(Country)s, %(Sector)s,
+                %(Industry)s, %(Address)s, %(FiscalYearEnd)s, %(LatestQuarter)s, %(MarketCapitalization)s, %(EBITDA)s,
+                %(PERatio)s, %(PEGRatio)s, %(BookValue)s, %(DividendPerShare)s, %(DividendYield)s, %(EPS)s, %(RevenuePerShareTTM)s,
+                %(ProfitMargin)s, %(OperatingMarginTTM)s, %(ReturnOnAssetsTTM)s, %(ReturnOnEquityTTM)s, %(RevenueTTM)s,
+                %(GrossProfitTTM)s, %(DilutedEPSTTM)s, %(QuarterlyEarningsGrowthYOY)s, %(QuarterlyRevenueGrowthYOY)s,
+                %(AnalystTargetPrice)s, %(TrailingPE)s, %(ForwardPE)s, %(PriceToSalesRatioTTM)s, %(PriceToBookRatio)s,
+                %(EVToRevenue)s, %(EVToEBITDA)s, %(Beta)s, %(52WeekHigh)s, %(52WeekLow)s, %(50DayMovingAverage)s,
+                %(200DayMovingAverage)s, %(SharesOutstanding)s, %(DividendDate)s, %(ExDividendDate)s
+            )
+            ON DUPLICATE KEY UPDATE
+                asset_type=VALUES(asset_type), name=VALUES(name), description=VALUES(description), cik=VALUES(cik), 
+                exchange=VALUES(exchange), currency=VALUES(currency), country=VALUES(country), sector=VALUES(sector), 
+                industry=VALUES(industry), address=VALUES(address), fiscal_year_end=VALUES(fiscal_year_end), 
+                latest_quarter=VALUES(latest_quarter), market_capitalization=VALUES(market_capitalization), 
+                ebitda=VALUES(ebitda), pe_ratio=VALUES(pe_ratio), peg_ratio=VALUES(peg_ratio), 
+                book_value=VALUES(book_value), dividend_per_share=VALUES(dividend_per_share), 
+                dividend_yield=VALUES(dividend_yield), eps=VALUES(eps), revenue_per_share_ttm=VALUES(revenue_per_share_ttm), 
+                profit_margin=VALUES(profit_margin), operating_margin_ttm=VALUES(operating_margin_ttm), 
+                return_on_assets_ttm=VALUES(return_on_assets_ttm), return_on_equity_ttm=VALUES(return_on_equity_ttm), 
+                revenue_ttm=VALUES(revenue_ttm), gross_profit_ttm=VALUES(gross_profit_ttm), 
+                diluted_eps_ttm=VALUES(diluted_eps_ttm), quarterly_earnings_growth_yoy=VALUES(quarterly_earnings_growth_yoy), 
+                quarterly_revenue_growth_yoy=VALUES(quarterly_revenue_growth_yoy), analyst_target_price=VALUES(analyst_target_price), 
+                trailing_pe=VALUES(trailing_pe), forward_pe=VALUES(forward_pe), price_to_sales_ratio_ttm=VALUES(price_to_sales_ratio_ttm), 
+                price_to_book_ratio=VALUES(price_to_book_ratio), ev_to_revenue=VALUES(ev_to_revenue), 
+                ev_to_ebitda=VALUES(ev_to_ebitda), beta=VALUES(beta), week_52_high=VALUES(week_52_high), week_52_low=VALUES(week_52_low), 
+                day_50_moving_average=VALUES(day_50_moving_average), day_200_moving_average=VALUES(day_200_moving_average), 
+                shares_outstanding=VALUES(shares_outstanding), dividend_date=VALUES(dividend_date), ex_dividend_date=VALUES(ex_dividend_date);
+            """
 
-        # Execute the upsert query with overview data
-        cursor.execute(upsert_query, (
-            converted_data['Symbol'],
-            converted_data['AssetType'],
-            converted_data['Name'],
-            converted_data['Description'],
-            converted_data['CIK'],
-            converted_data['Exchange'],
-            converted_data['Currency'],
-            converted_data['Country'],
-            converted_data['Sector'],
-            converted_data['Industry'],
-            converted_data['Address'],
-            converted_data['FiscalYearEnd'],
-            converted_data['LatestQuarter'],
-            converted_data['MarketCapitalization'],
-            converted_data['EBITDA'],
-            converted_data['PERatio'],  # Note: Ensure conversion logic matches original intent
-            converted_data['PEGRatio'],
-            converted_data['BookValue'],
-            converted_data['DividendPerShare'],
-            converted_data['DividendYield'],
-            converted_data['EPS'],
-            converted_data['RevenuePerShareTTM'],
-            converted_data['ProfitMargin'],
-            converted_data['OperatingMarginTTM'],
-            converted_data['ReturnOnAssetsTTM'],
-            converted_data['ReturnOnEquityTTM'],
-            converted_data['RevenueTTM'],
-            converted_data['GrossProfitTTM'],
-            converted_data['DilutedEPSTTM'],
-            converted_data['QuarterlyEarningsGrowthYOY'],
-            converted_data['QuarterlyRevenueGrowthYOY'],
-            converted_data['AnalystTargetPrice'],
-            converted_data['TrailingPE'],
-            converted_data['ForwardPE'],
-            converted_data['PriceToSalesRatioTTM'],
-            converted_data['PriceToBookRatio'],
-            converted_data['EVToRevenue'],
-            converted_data['EVToEBITDA'],
-            converted_data['Beta'],
-            converted_data['52WeekHigh'],
-            converted_data['52WeekLow'],
-            converted_data['50DayMovingAverage'],
-            converted_data['200DayMovingAverage'],
-            converted_data['SharesOutstanding'],
-            converted_data['DividendDate'],
-            converted_data['ExDividendDate']
-        ))
+            # Convert 'None' strings to None for the overview_data, excluding 'Symbol'
+            converted_data = convert_none_values(overview_data)
 
-        connection.commit()
-        print(f"Overview data for {symbol} updated in the database.")
-    else:
-        print(f"Failed to fetch overview data for {symbol}")
+            # Execute the upsert query with overview data
+            cursor.execute(upsert_query, converted_data)
+
+            connection.commit()
+            print(f"Overview data for {symbol} updated in the database.")
+        else:
+            print(f"Failed to fetch overview data for {symbol}")
+    except Exception as e:
+        print(f"An error occured: {e}")
+    finally:
+        if cursor:
+            cursor.close()
+        if connection:
+            connection.close()
 
     # Logic to rotate the API key
     calls_made_with_current_key += 1
@@ -281,109 +252,37 @@ def fetch_stock_overview(symbol):
         current_key_index = (current_key_index + 1) % len(api_keys)
         calls_made_with_current_key = 0  # Reset the count for the new key
 
-    cursor.close()
-    connection.close()
-
-def fetch_intraday_data(symbol):
-
-    global current_key_index, calls_made_with_current_key
-
-    connection = db_connect()
-    cursor = connection.cursor()
-
-    # Fetch ID for symbol from stock_overview table
-    cursor.execute("SELECT ID FROM stock_overview WHERE symbol = %s", (symbol,))
-    result = cursor.fetchone()
-    if result is None:
-        print(f"No ID found for symbol {symbol}. Ensure stock_overview is populated first.")
-        return  # Exit the function if no ID found
-    stock_id = result[0]
-
-    # Clear existing records from intraday_data table
-    cursor.execute("DELETE FROM intraday_data WHERE ID = %s", (stock_id,))
-    connection.commit()
-
-    # Fetch and insert new intraday data as before
-    url = "https://alpha-vantage.p.rapidapi.com/query"
-    querystring = {
-        "function": "TIME_SERIES_INTRADAY",
-        "symbol": symbol,
-        "interval": "1min",
-        "outputsize": "full",
-        "datatype": "json"
-    }
-    headers = {
-        "X-RapidAPI-Key": api_keys[current_key_index],
-        "X-RapidAPI-Host": "alpha-vantage.p.rapidapi.com"
-    }
-    response = requests.get(url, headers=headers, params=querystring)
-    if response.status_code == 200:
-        data = response.json()
-        intraday_data = data['Time Series (1min)']  # Adjust based on the actual key in response
-
-        insert_query = """
-        INSERT INTO intraday_data (ID, symbol, date_time, open, high, low, close, volume)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
-        """
-
-        for date_time, values in intraday_data.items():
-            cursor.execute(insert_query, (
-                stock_id,
-                symbol,
-                date_time,
-                values['1. open'],
-                values['2. high'],
-                values['3. low'],
-                values['4. close'],
-                values['5. volume']
-            ))
-
-        connection.commit()
-        print(f"Intraday data for {symbol} has been updated.")
-    else:
-        print(f"Failed to fetch intraday data for {symbol}")
-
-    # Logic to rotate the API key
-    calls_made_with_current_key += 1
-    if calls_made_with_current_key >= 5:
-        current_key_index = (current_key_index + 1) % len(api_keys)
-        calls_made_with_current_key = 0  # Reset the count for the new key
-
-    cursor.close()
-    connection.close()
-
-# Main function to iterate through stocks and populate the database (Will not be used in project implementation)
 def main():
+    """
+    MAIN FUNCTION FOR DATA POPULATION DURING DEVELOPMENT
+
+    Main function to iterate through a predefined list of stocks and populate the database with their data.
+    Fetches overview, daily, and intraday data for each stock.
+    """
     stocks = {
-    "Amazon": "AMZN",
-    "Apple": "AAPL",
-    "Dell": "DELL",
-    "GameStop": "GME",
-    "Google": "GOOGL",
-    "Intel": "INTC",
-    "Microsoft": "MSFT",
-    "Netflix": "NFLX",
-    "NVIDIA": "NVDA",
-    "Tesla": "TSLA",
-    "S&P Global Inc.": "SPGI",
-    "Dow Inc.": "DOW",
-    "Nasdaq, Inc": "NDAQ",
-}
+        "Amazon": "AMZN",
+        "Apple": "AAPL",
+        "Dell": "DELL",
+        "GameStop": "GME",
+        "Google": "GOOGL",
+        "Intel": "INTC",
+        "Microsoft": "MSFT",
+        "Netflix": "NFLX",
+        "NVIDIA": "NVDA",
+        "Tesla": "TSLA",
+        "S&P Global Inc.": "SPGI",
+        "Dow Inc.": "DOW",
+        "Nasdaq, Inc": "NDAQ",
+    }
     
     current_call_count = 0
 
     for name, symbol in stocks.items():
         print(f"Fetching data for {name} ({symbol})...")
 
-        # Must be called fist before historical data can be called
-        # fetch_stock_overview(symbol) # Updates stock_overview table with most-recent day.
-
-        # Only needs to be called once throughout the project duration
-        
-        fetch_historical_data(symbol)
-
-        fetch_intraday_data(symbol) # Drops information from intraday_table and appends new data.
-        #fetch_daily_data(symbol) # Updates historical_data table with most-recent day.
+        fetch_stock_overview(symbol) # Updates stock_overview table with most-recent day.
+        fetch_stock_data(symbol, 'daily')
+        fetch_stock_data(symbol, 'intraday')
         
         current_call_count +=3 # Increment by the number of calls made
 

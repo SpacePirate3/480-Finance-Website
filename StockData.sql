@@ -64,14 +64,14 @@ CREATE TABLE stock_overview (
 CREATE TABLE intraday_data (
     ID INT,
     symbol VARCHAR(10) NOT NULL,
-    date_time DATETIME NOT NULL,
+    date DATETIME NOT NULL,
     open DECIMAL(10, 2),
     high DECIMAL(10, 2),
     low DECIMAL(10, 2),
     close DECIMAL(10, 2),
     volume BIGINT,
     FOREIGN KEY (ID) REFERENCES stock_overview(ID),
-    PRIMARY KEY (ID, date_time)
+    PRIMARY KEY (ID, date)
 );
 
 -- Creation of the historical_data table
