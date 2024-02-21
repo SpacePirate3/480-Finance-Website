@@ -1,1 +1,2 @@
-template/apps/core/.env
+template/apps/core/
+.env
