@@ -20,6 +20,8 @@
     background: #ffffff; /* Assuming white is the color for the container */
     gap: 20px; /* Space between the two sections */
     height: 100%;
+    margin: 20px;
+    margin-left: 35px;
 }
 
 .popular-stocks-section, .top-movers-section {
@@ -85,6 +87,18 @@
     height: 34px;
 }
 
+    .stock-button-popular:hover {
+        background-color: #b9f7fc; /* Slightly darker on hover */
+        box-shadow: 0 6px 12px 0 rgba(0, 0, 0, 0.2); /* Larger shadow on hover */
+        cursor: pointer;
+    }
+
+    .stock-button-table-top:hover {
+        background-color: #b9f7fc; /* Slightly darker on hover */
+        box-shadow: 0 6px 12px 0 rgba(0, 0, 0, 0.2); /* Larger shadow on hover */
+        cursor: pointer;
+    }
+
 .stock-logo {
     /* Adjustments for the logo circle */
     width: 80px; /* Example size, adjust as needed */
@@ -126,22 +140,10 @@
     justify-content: center; /* Center vertically */
 }
 
-.stock-change-positive {
-    color: #4CAF50; /* Green color for positive change */
-}
+    .stock-change-positive {
+        color: #4CAF50; /* Green color for positive change */
+    }
 
-.stock-change-negative {
-    color: #F44336; /* Red color for negative change */
-}
-
-.stock-button-popular:hover {
-    background-color: #b9f7fc; /* Slightly darker on hover */
-    box-shadow: 0 6px 12px 0 rgba(0, 0, 0, 0.2); /* Larger shadow on hover */
-    cursor: pointer;
-}
-
-.stock-button-table-top:hover {
-    background-color: #b9f7fc; /* Slightly darker on hover */
-    box-shadow: 0 6px 12px 0 rgba(0, 0, 0, 0.2); /* Larger shadow on hover */
-    cursor: pointer;
-}
+    .stock-change-negative {
+        color: #F44336; /* Red color for negative change */
+    }
