@@ -31,31 +31,28 @@ function Stocks() {
     const renderStockButton = (stock, index) => (
         <div 
             key={index}
-            className="stock-button" 
+            className="stock-button-popular" 
             onMouseEnter={() => handleStockHover(stock)}
             onMouseLeave={() => setSelectedStock(null)}
         >
             <div className="stock-logo"></div>
-            <div className="stock-info">
-                <div>{stock.company}</div>
-                <div>{stock.price} USD</div>
-                <div>{stock.change}</div>
-                <div>{stock.percentChange}</div>
+            <div className="stock-info-wrapper">
+                <div className="company-name">{stock.company}</div>
+                <div className="stock-price">{stock.price} USD</div>
             </div>
-            {selectedStock === stock && (
-                <div className="stock-details">
-                    <h3>{stock.company}</h3>
-                    <p>{stock.symbol}</p>
-                    <p>Price: {stock.price} USD</p>
-                    <p>Change: {stock.change}</p>
-                    <p>Percent Change: {stock.percentChange}</p>
+            <div className="stock-change-group">
+                <div className={`stock-change ${parseFloat(stock.change) > 0 ? 'stock-change-positive' : 'stock-change-negative'}`}>
+                    {stock.change}
                 </div>
-            )}
+                <div className={`percent-change ${parseFloat(stock.percentChange) > 0 ? 'stock-change-positive' : 'stock-change-negative'}`}>
+                    {stock.percentChange}
+                </div>
+            </div>
         </div>
     );
 
     const renderTopMoversRow = (mover, index) => (
-        <div className="stock-button" key={index}>
+        <div className="stock-button-table-top" key={index}>
             <span>{mover.symbol}</span>
             <span>{mover.price} USD</span>
             <span>{mover.change}</span>

@@ -31,19 +31,19 @@ function MarketSummary() {
                         <span>CHG</span>
                         <span>%CHG</span>
                     </div>
-                    <div className="stock-button" onMouseEnter={() => handleMouseEnter({ name: 'S&P Global Inc. (SPGI)' })} onMouseLeave={handleMouseLeave}>
+                    <div className="stock-button-table-summary" onMouseEnter={() => handleMouseEnter({ name: 'S&P Global Inc. (SPGI)' })} onMouseLeave={handleMouseLeave}>
                         <span>SPGI</span>
                         <span>293.45 USD</span>
                         <span>+24.34</span>
                         <span>+12.12%</span>
                     </div>
-                    <div className="stock-button" onMouseEnter={() => handleMouseEnter({ name: 'Dow Inc. (DOW)' })} onMouseLeave={handleMouseLeave}>
+                    <div className="stock-button-table-summary" onMouseEnter={() => handleMouseEnter({ name: 'Dow Inc. (DOW)' })} onMouseLeave={handleMouseLeave}>
                         <span>DOW</span>
                         <span>293.45 USD</span>
                         <span>+24.34</span>
                         <span>+12.12%</span>
                     </div>
-                    <div className="stock-button" onMouseEnter={() => handleMouseEnter({ name: 'NASDAQ Inc. (NDAQ)' })} onMouseLeave={handleMouseLeave}>
+                    <div className="stock-button-table-summary" onMouseEnter={() => handleMouseEnter({ name: 'NASDAQ Inc. (NDAQ)' })} onMouseLeave={handleMouseLeave}>
                         <span>NDAQ</span>
                         <span>293.45 USD</span>
                         <span>+24.34</span>

@@ -26,7 +26,6 @@
     flex: 1; /* Allow both sections to fill the space */
     padding: 20px;
     background: #ffffff; /* Assuming white is the color for the sections */
-    margin: 0 10px; /* Add some margin to the sides */
 }
 
 .popular-stocks-section {
@@ -35,9 +34,7 @@
 
 .top-movers-section {
     flex: 1; /* One-third of the container width */
-    display: flex;
     flex-direction: column;
-    padding-left: 24px; /* Add some padding if needed */
     border-left: 2px solid #82D781; /* Adds a line between the chart and the table */
     height: fit-content; /* Makes sure the menu doesn't stretch to the bottom if it's shorter than the graph */
 }
@@ -60,36 +57,55 @@
     gap: 20px; /* Add gap between buttons if needed */
 }
 
-.stock-button {
+.stock-button-popular{
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    padding: 5px 20px;
+    background-color: #FFFFFF; /* White background */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2); /* Shadow effect */
+    transition: all 0.3s ease; /* Smooth transition for hover effects */
+    font-family: 'Arial', sans-serif; /* The font from your screenshot */
+    height: 127px;
+}
+
+.stock-button-table-top {
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 12px 20px;
-    margin: 4px 0; 
+    margin: 8px 0; 
     background-color: #FFFFFF; /* White background */
-    border-radius: 20px; /* Rounded corners */
+    border-radius: 8px; /* Rounded corners */
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2); /* Shadow effect */
     transition: all 0.3s ease; /* Smooth transition for hover effects */
     font-family: 'Arial', sans-serif; /* The font from your screenshot */
     margin-bottom: 10px; /* Space between buttons */
+    height: 34px;
 }
 
 .stock-logo {
     /* Adjustments for the logo circle */
-    width: 60px; /* Example size, adjust as needed */
-    height: 60px; /* Example size, adjust as needed */
+    width: 80px; /* Example size, adjust as needed */
+    height: 80px; /* Example size, adjust as needed */
     border-radius: 50%; /* Circular shape */
     background-color: #7090B0; /* Example color, adjust as needed */
-    flex-shrink: 0; /* Prevents resizing */
+    margin-right: 20px; /* Add margin between logo and text */
 }
 
-.stock-info > div {
-    margin-bottom: 5px; /* Space between text lines */
+/* Use this wrapper to group the name and price */
+.stock-info-wrapper {
+    flex-grow: 1; /* Allow it to take up the available space */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Center the content vertically */
 }
 
 .stock-info .company-name {
     font-size: 16px; /* Larger font size for the company name */
     font-weight: bold; /* Bold font for company name */
+    color: #333; /* Dark text color for readability */
 }
 
 .stock-info .stock-price {
@@ -97,31 +113,35 @@
     color: #333; /* Dark text color for readability */
 }
 
-.stock-info .stock-change {
-    font-size: 14px; /* Font size for the change value */
-    color: #4CAF50; /* Green color for positive change, adjust as needed */
+.stock-info .stock-change, .stock-info .percent-change {
+    font-size: 14px; /* Font size for the change value and percentage change */
+    /* Color will be set dynamically in JS based on value */
 }
 
-.stock-info .percent-change {
-    font-size: 14px; /* Font size for the percentage change */
-    color: #4CAF50; /* Green color for positive change, adjust as needed */
-    margin-left: auto; /* Pushes to the right */
+/* Align the change and percentage to the right */
+.stock-change-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end; /* Align to the right */
+    justify-content: center; /* Center vertically */
 }
 
-.stock-button:hover {
+.stock-change-positive {
+    color: #4CAF50; /* Green color for positive change */
+}
+
+.stock-change-negative {
+    color: #F44336; /* Red color for negative change */
+}
+
+.stock-button-popular:hover {
     background-color: #b9f7fc; /* Slightly darker on hover */
     box-shadow: 0 6px 12px 0 rgba(0, 0, 0, 0.2); /* Larger shadow on hover */
     cursor: pointer;
 }
 
-.view-all {
-    padding: 10px 20px;
-    border: 1px solid #ccc;
+.stock-button-table-top:hover {
+    background-color: #b9f7fc; /* Slightly darker on hover */
+    box-shadow: 0 6px 12px 0 rgba(0, 0, 0, 0.2); /* Larger shadow on hover */
     cursor: pointer;
-    text-align: center;
-    background-color: #e7e7e7; /* Button background */
-    display: block; /* Ensure the button is block level to occupy full width */
-    margin-top: 10px; /* Space from the last stock button */
-    width: fit-content; /* Fit the content's width */
-    align-self: center; /* Center the button in the section */
 }
