@@ -1,0 +1,12 @@
+body {
+  margin: 0; /* Resets any default margin */
+  padding: 20px; /* Resets any default padding */
+  background: #232A31; /* Sets the background color to match the header */
+  font-family: 'Inter', sans-serif; /* Optional: Sets the default font */
+}
+
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}

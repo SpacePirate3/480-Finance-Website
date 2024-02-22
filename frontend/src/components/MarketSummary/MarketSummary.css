@@ -1,0 +1,65 @@
+.market-summary {
+    display: flex;
+    background: #ffffff;
+    color: #232A31;
+    padding: 20px; /* This adds padding around the entire market-summary */
+    margin-bottom: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Optional: adds a subtle shadow for depth */
+    align-items: flex-start; /* Aligns items to the top */
+}
+
+.graph-area {
+    flex: 2; /* Takes up 2/3 of the space */
+    padding: 20px;
+}
+
+.market-summary h2,
+.market-summary h3 {
+    margin: 0;
+    padding: 0;
+}
+
+.stock-chart {
+    width: 100%;
+    height: 400px; /* Adjust height as needed */
+    background: #1e1e1e; /* Temporary background color */
+    /* Add more styles as needed */
+}
+
+.stock-chart.active {
+    background: green; /* Change to actual graph or indicate active stock */
+}
+
+.stock-menu {
+    flex: 1; /* Takes up 1/3 of the space */
+    padding: 20px;
+    border-left: 2px solid #eaeaea; /* Adds a line between the chart and the table */
+    height: fit-content; /* Makes sure the menu doesn't stretch to the bottom if it's shorter than the graph */
+    margin-top: 48px;
+}
+
+.stock-table {
+    background-color: #f2f2f2; /* Light gray background for the table */
+    border-radius: 8px; /* Rounded corners for the table */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Shadow effect for the table */
+    overflow: hidden; /* Ensures the border radius clips the content */
+}
+
+.stock-table-header {
+    display: flex;
+    justify-content: space-between;
+    background: #f2f2f2;
+    padding: 10px;
+}
+
+.stock-button {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    border-bottom: 1px solid #3a3a3a;
+    transition: background-color 0.3s;
+}
+
+.stock-button:hover {
+    background-color: #e3e3e3; /* Color when a row is hovered */
+}
