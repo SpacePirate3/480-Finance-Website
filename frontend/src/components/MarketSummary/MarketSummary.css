@@ -21,7 +21,6 @@
 }
 
 .stock-chart {
-    display: flex;
     height: 500px; /* Adjust height as needed */
     background: #1e1e1e; /* Temporary background color */
     /* Add more styles as needed */

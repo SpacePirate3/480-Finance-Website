@@ -9,11 +9,12 @@ function PopularStocks() {
     const apiBaseUrl = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000/api'; //temporary until .env works
 
     const fetchData = async () => {
+
         try {
             const response = await axios.get(`${apiBaseUrl}/stock/list/`);
             const stockSymbols = response.data;
             const updatedStocks = [];
-    
+
             for (const symbol of stockSymbols) {
                 try {
                     const overviewResponse = await axios.get(`${apiBaseUrl}/stock/overview/${symbol}/`);
@@ -45,7 +46,6 @@ function PopularStocks() {
 
     useEffect(() => {
         fetchData();
-
         const interval = setInterval(() => {
             fetchData();
         }, 60000); // Fetch data every minute
@@ -96,7 +96,6 @@ function PopularStocks() {
             </div>
         );
     };
-    
     const renderTopMoversRow = (mover, index) => {
         const changeClass = parseFloat(mover.change) > 0 ? 'stock-change-positive' : 'stock-change-negative';
         const percentChangeClass = parseFloat(mover.percentChange) > 0 ? 'stock-change-positive' : 'stock-change-negative';
@@ -110,7 +109,6 @@ function PopularStocks() {
             </div>
         );
     };
-
     const renderTopGainersRow = (gainer, index) => {
         const changeClass = parseFloat(gainer.change) > 0 ? 'stock-change-positive' : 'stock-change-negative';
         const percentChangeClass = parseFloat(gainer.percentChange) > 0 ? 'stock-change-positive' : 'stock-change-negative';
@@ -160,7 +158,7 @@ function PopularStocks() {
                 </div>
             </div>
         </div>
-    );  
+    );
 }
 
 export default PopularStocks;
