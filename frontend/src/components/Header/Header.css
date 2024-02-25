@@ -13,7 +13,9 @@
     display: flex;
     align-items: center;
     padding: 20px;
+    cursor: pointer;
 }
+    
     .textGlance, .textFinance, .buttons {
         font-family: 'Inter', sans-serif;
         font-weight: 800;
@@ -51,7 +53,7 @@
     width: 70px; /* Width of the button */
     height: 5px; /* Height of each bar */
     background-color: #FFFFFF; /* Color of the bars */
-    margin: 7px 0; /* Spacing between the bars */
+    margin: 10px 0; /* Spacing between the bars */
     border-radius: 3px; /* Rounded edges */
     transition: all 0.3s ease-in-out; /* Smooth transition for any animation */
 }
@@ -71,12 +73,13 @@
     align-items: center;
     justify-content: flex-end; /* Align items to the right */
     padding-right: 1em;
+    font-size: 35px;
     color: #FFFFFF;
     cursor: pointer;
 }
 
     .homeButton {
-        margin-right: 20px;
+        margin-right: 70px;
     }
 
     /* Hover effect for Home button text */
@@ -88,7 +91,7 @@
         content: '';
         position: absolute;
         left: 0;
-        bottom: -10px; /* Adjust as needed to position the green bar below the text */
+        bottom: -20px; /* Adjust as needed to position the green bar below the text */
         width: 100%;
         height: 5px; /* Height of the green bar */
         background-color: #82D781; /* Green color */
