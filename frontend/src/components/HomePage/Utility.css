@@ -1,0 +1,30 @@
+.table {
+    background-color: #f2f2f2;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+.table-header,
+.row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr; /* Four equal columns */
+    align-items: center;
+    padding: 12px 20px;
+    background-color: #FFFFFF;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+    font-family: 'Arial', sans-serif;
+    gap: 10px;
+    margin: 8px 0;
+}
+.table-header {
+    font-weight: bold;
+    background-color: #f2f2f2;
+    box-shadow: none;
+}
+.row:hover {
+    background-color: #b9f7fc;
+    box-shadow: 0 6px 12px 0 rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+}

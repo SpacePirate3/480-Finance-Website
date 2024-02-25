@@ -1,13 +1,5 @@
 /* PopularStocks.css */
 
-.stock-table {
-    flex-grow: 1;
-    background-color: #f2f2f2;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-}
-
 .stock-menu {
     flex: 1;
     padding: 20px;
@@ -27,7 +19,6 @@
 
 .popular-stocks-section, .top-movers-section {
     flex: 1;
-    padding: 20px;
     background: #ffffff;
 }
 
@@ -39,7 +30,7 @@
     flex: 1; /* Takes up the remaining 1/3 of the space */
     display: flex;
     flex-direction: column;
-    gap: 20px; /* Adjust the gap as needed */
+    padding: 20px;
     border-left: 4px solid #82D781;
 }
 
@@ -53,7 +44,6 @@
     flex: 1;
     flex-direction: column;
     height: fit-content;
-    padding: 20px;
     /* ... any additional styles ... */
 }
 
@@ -88,22 +78,7 @@
     height: 127px;
 }
 
-.stock-button-table-top {
-    display: grid;
-    grid-template-columns: 1fr 2fr auto auto; /* Creates four columns */
-    align-items: center;
-    padding: 12px 20px;
-    margin: 8px 0;
-    background-color: #FFFFFF;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
-    transition: all 0.3s ease;
-    font-family: 'Arial', sans-serif;
-    height: 34px;
-    gap: 10px;
-}
-
-.stock-button-popular:hover, .stock-button-table-top:hover {
+.stock-button-popular:hover {
     background-color: #b9f7fc;
     box-shadow: 0 6px 12px 0 rgba(0, 0, 0, 0.2);
     cursor: pointer;
@@ -152,11 +127,4 @@
 
 .stock-change-negative {
     color: #F44336;
-}
-
-/* Style for the stock table header to align with the rows */
-.stock-table-header {
-    display: grid;
-    grid-template-columns: 1fr 2fr auto auto;
-    /* Add any additional styling for the header here */
 }
