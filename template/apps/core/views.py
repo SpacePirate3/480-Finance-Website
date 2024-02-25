@@ -6,7 +6,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.decorators.http import require_GET
 from dotenv import load_dotenv
-import stock_data_pull
+import FWS.FWS.stock_data_pull as stock_data_pull
 import functions
 
 @require_GET

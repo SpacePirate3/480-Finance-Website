@@ -21,10 +21,12 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    path('api/stock-overview/', views.StockOverviewListCreate.as_view()),
-    path('api/intraday-data/', views.IntradayDataListCreate.as_view()),
-    path('api/historical-data/', views.HistoricalDataListCreate.as_view()),
-    #path('app/', include('FWS.urls')),
+    path('api/stock/overview/<str:symbol>/', views.stock_overview, name='stock_overview'),
+    path('api/stock/historical/<str:symbol>/', views.historical_data, name='historical_data'),
+    path('api/stock/intraday/<str:symbol>/', views.intraday_data, name='intraday_data'),
+    path('api/stock/list/', views.stock_list, name='stock_list'),
+
+    # ... add other URL patterns as needed ...
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

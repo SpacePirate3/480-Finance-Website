@@ -12,6 +12,7 @@
 .logo{
     display: flex;
     align-items: center;
+    padding: 20px;
 }
     .textGlance, .textFinance, .buttons {
         font-family: 'Inter', sans-serif;

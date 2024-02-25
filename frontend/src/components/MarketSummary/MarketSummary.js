@@ -22,9 +22,9 @@ function MarketSummary() {
                     {activeStock ? activeStock.name : 'Graph Placeholder'}
                 </div>
             </div>
-            <div className="stock-menu">
+            <div className="stock-menu-market">
                 {/* You would dynamically generate these rows based on your data */}
-                <div className="stock-table">
+                <div className="summary-container">
                     <div className="stock-table-header">
                         <span>NAME</span>
                         <span>LAST</span>

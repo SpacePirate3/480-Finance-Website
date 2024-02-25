@@ -280,11 +280,11 @@ def main():
     for name, symbol in stocks.items():
         print(f"Fetching data for {name} ({symbol})...")
 
-        fetch_stock_overview(symbol) # Updates stock_overview table with most-recent day.
-        fetch_stock_data(symbol, 'daily')
+        #fetch_stock_overview(symbol) # Updates stock_overview table with most-recent day.
+        #fetch_stock_data(symbol, 'historical')
         fetch_stock_data(symbol, 'intraday')
         
-        current_call_count +=3 # Increment by the number of calls made
+        current_call_count +=1 # Increment by the number of calls made
 
         # After every 15 calls, pause for 60 seconds
         if current_call_count >= 15:

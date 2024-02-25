@@ -2,6 +2,7 @@ from django.db import models
 
 
 class StockOverview(models.Model):
+    id = models.AutoField(primary_key=True)
     symbol = models.CharField(max_length=10, unique=True)
     asset_type = models.CharField(max_length=50, blank=True, null=True)
     name = models.CharField(max_length=255, blank=True, null=True)
@@ -54,8 +55,7 @@ class StockOverview(models.Model):
         app_label = 'app'
 
 class IntradayData(models.Model):
-    ID = models.ForeignKey(StockOverview, on_delete=models.CASCADE)
-    symbol = models.CharField(max_length=10)
+    stock_id = models.ForeignKey(StockOverview, on_delete=models.CASCADE, db_column='ID')
     date = models.DateTimeField()
     open = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     high = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
@@ -65,12 +65,11 @@ class IntradayData(models.Model):
 
     class Meta:
         db_table = 'intraday_data'
-        unique_together = (('ID', 'date'),)
+        unique_together = (('stock_id', 'date'),)
         app_label = 'app'
 
 class HistoricalData(models.Model):
-    ID = models.ForeignKey(StockOverview, on_delete=models.CASCADE)
-    symbol = models.CharField(max_length=10)
+    stock_id = models.ForeignKey(StockOverview, on_delete=models.CASCADE, db_column='ID')
     date = models.DateField()
     open = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     high = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
@@ -80,5 +79,5 @@ class HistoricalData(models.Model):
 
     class Meta:
         db_table = 'historical_data'
-        unique_together = (('ID', 'date'),)
+        unique_together = (('stock_id', 'date'),)
         app_label = 'app'
