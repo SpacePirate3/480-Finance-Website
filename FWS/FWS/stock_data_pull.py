@@ -18,6 +18,7 @@ DB_USER = os.getenv("DB_USER")
 DB_PASSWORD = os.getenv("DB_PASSWORD")
 DB_NAME = os.getenv("DB_NAME")
 
+
 def db_connect():
     """
     Establishes a connection to the database using credentials loaded from environment variables.
@@ -32,6 +33,7 @@ def db_connect():
         database=DB_NAME
     )
 
+
 def convert_none_values(data):
     """
     Converts 'None' or '-' string values to None type for all keys except 'Symbol' in a dictionary.
@@ -45,6 +47,7 @@ def convert_none_values(data):
         key: None if (value == 'None' or value == '-') and key != 'Symbol' else value
         for key, value in data.items()
     }
+
 
 def fetch_stock_data(symbol, fetch_type="historical", interval_min=1):
     """
@@ -73,7 +76,7 @@ def fetch_stock_data(symbol, fetch_type="historical", interval_min=1):
             }
         elif fetch_type == "intraday":
             function = "TIME_SERIES_INTRADAY"
-            interval_str = f"{interval_min}min" # Format interval as a string, i.e. "1min".
+            interval_str = f"{interval_min}min"  # Format interval as a string, i.e. "1min".
             output_size = "compact"  # Always use compact for intraday
             querystring = {
                 "function": function,
@@ -133,13 +136,13 @@ def fetch_stock_data(symbol, fetch_type="historical", interval_min=1):
             # Insert or update the stock data
             for date, values in stock_data.items():
                 cursor.execute(upsert_query, (
-                    stock_id, 
-                    symbol, 
-                    date, 
-                    values['1. open'], 
+                    stock_id,
+                    symbol,
+                    date,
+                    values['1. open'],
                     values['2. high'],
-                    values['3. low'], 
-                    values['4. close'], 
+                    values['3. low'],
+                    values['4. close'],
                     values['5. volume']
                 ))
 
@@ -155,12 +158,13 @@ def fetch_stock_data(symbol, fetch_type="historical", interval_min=1):
             cursor.close()
         if connection:
             connection.close()
-    
+
     # API key rotation logic
     calls_made_with_current_key += 1
     if calls_made_with_current_key >= 5:
         current_key_index = (current_key_index + 1) % len(api_keys)
         calls_made_with_current_key = 0
+
 
 def fetch_stock_overview(symbol):
     """
@@ -252,6 +256,72 @@ def fetch_stock_overview(symbol):
         current_key_index = (current_key_index + 1) % len(api_keys)
         calls_made_with_current_key = 0  # Reset the count for the new key
 
+
+def intraday_update():
+    stocks = {
+        "Amazon": "AMZN",
+        "Apple": "AAPL",
+        "Dell": "DELL",
+        "GameStop": "GME",
+        "Google": "GOOGL",
+        "Intel": "INTC",
+        "Microsoft": "MSFT",
+        "Netflix": "NFLX",
+        "NVIDIA": "NVDA",
+        "Tesla": "TSLA",
+        "S&P Global Inc.": "SPGI",
+        "Dow Inc.": "DOW",
+        "Nasdaq, Inc": "NDAQ",
+    }
+
+    current_call_count = 0
+
+    for name, symbol in stocks.items():
+        print(f"Fetching data for {name} ({symbol})...")
+
+        # fetch_stock_overview(symbol) # Updates stock_overview table with most-recent day.
+        # fetch_stock_data(symbol, 'historical')
+        fetch_stock_data(symbol, 'intraday')
+
+        current_call_count += 1  # Increment by the number of calls made
+
+        # After every 15 calls, pause for 60 seconds
+        if current_call_count >= 15:
+            print("60 second pause (API call limits)")
+            time.sleep(60)
+            current_call_count = 0  # Reset call count
+
+def daily_update():
+    stocks = {
+        "Amazon": "AMZN",
+        "Apple": "AAPL",
+        "Dell": "DELL",
+        "GameStop": "GME",
+        "Google": "GOOGL",
+        "Intel": "INTC",
+        "Microsoft": "MSFT",
+        "Netflix": "NFLX",
+        "NVIDIA": "NVDA",
+        "Tesla": "TSLA",
+        "S&P Global Inc.": "SPGI",
+        "Dow Inc.": "DOW",
+        "Nasdaq, Inc": "NDAQ",
+    }
+
+    current_call_count = 0
+
+    for name, symbol in stocks.items():
+        print(f"Fetching data for {name} ({symbol})...")
+
+        fetch_stock_overview(symbol) # Updates stock_overview table with most-recent day.
+        time.sleep(60)
+        fetch_stock_data(symbol, 'daily')
+
+        current_call_count += 1  # Increment by the number of calls made
+
+        # After every 15 calls, pause for 60 seconds
+
+
 def main():
     """
     MAIN FUNCTION FOR DATA POPULATION DURING DEVELOPMENT
@@ -274,7 +344,7 @@ def main():
         "Dow Inc.": "DOW",
         "Nasdaq, Inc": "NDAQ",
     }
-    
+
     current_call_count = 0
 
     for name, symbol in stocks.items():
@@ -282,15 +352,16 @@ def main():
 
         #fetch_stock_overview(symbol) # Updates stock_overview table with most-recent day.
         #fetch_stock_data(symbol, 'historical')
-        fetch_stock_data(symbol, 'intraday')
-        
-        current_call_count +=1 # Increment by the number of calls made
+        #fetch_stock_data(symbol, 'intraday')
+
+        current_call_count += 1  # Increment by the number of calls made
 
         # After every 15 calls, pause for 60 seconds
         if current_call_count >= 15:
             print("60 second pause (API call limits)")
             time.sleep(60)
-            current_call_count = 0 # Reset call count
+            current_call_count = 0  # Reset call count
+
 
 if __name__ == "__main__":
     main()

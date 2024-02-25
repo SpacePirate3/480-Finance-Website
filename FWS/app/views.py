@@ -1,10 +1,10 @@
 import json
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from .models import StockOverview, HistoricalData, IntradayData
 from django.core.serializers import serialize
 from django.urls import path
 from . import views
-
+from FWS import stock_data_pull
 def stock_overview(request, symbol):
     try:
         stock = StockOverview.objects.get(symbol=symbol)
@@ -40,6 +40,37 @@ def intraday_data(request, symbol):
         intraday_data = IntradayData.objects.filter(stock_id=stock.id).order_by('-date')
         data_json = serialize('json', intraday_data)
         data_dict = json.loads(data_json)  # Convert JSON string to dictionary
+        return JsonResponse(data_dict, safe=False)
+    except StockOverview.DoesNotExist:
+        return JsonResponse({'error': 'Stock not found'}, status=404)
+
+def candlestick_chart_data(request, symbol, period):
+    try:
+        stock = StockOverview.objects.get(symbol=symbol)
+        intraday_data = IntradayData.objects.filter(stock_id=stock.id).order_by('-date')
+        count, open,  high, low, close, volume = 0
+        chart = list()
+        for i in intraday_data:
+            if i.high > high:
+                high = i.high
+            if i.low < low:
+                low = i.low
+            if close == 0:
+                close = i.close
+            if count == (period/5):
+                open = i.open
+                list.append([i.date, open, high, low, close])
+                count, open, high, low, close, volume = 0
+        return JsonResponse(chart, safe=False)
+    except StockOverview.DoesNotExist:
+        return JsonResponse({'error': 'Stock not found'}, status=404)
+
+def line_chart_data(request, symbol):
+    try:
+        stock = StockOverview.objects.get(symbol=symbol)
+        data = IntradayData.objects.filter(stock_id=stock.id).order_by('date')
+        data_json = serialize('json', data)
+        data_dict = json.loads(data_json)
         return JsonResponse(data_dict, safe=False)
     except StockOverview.DoesNotExist:
         return JsonResponse({'error': 'Stock not found'}, status=404)
