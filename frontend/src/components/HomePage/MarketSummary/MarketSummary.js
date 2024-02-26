@@ -11,10 +11,10 @@ function MarketSummary () {
     const apiBaseUrl = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000/api';
     const [activeStock, setActiveStock] = useState(null)
     const [indexes, setIndexes] = useState([])
-    const fetchData = async () => {
-        const specificSymbols = ['SPGI', 'DOW', 'NDAQ'];
-        const updatedIndexes = await fetchSpecificIndexes(apiBaseUrl, specificSymbols);
 
+    const fetchData = async () => {
+        const specificSymbols = ['AMZN', 'GOOGL', 'AAPL', 'META', 'NFLX'];
+        const updatedIndexes = await fetchSpecificIndexes(apiBaseUrl, specificSymbols);
         setIndexes(updatedIndexes);
     }
 
@@ -32,6 +32,7 @@ function MarketSummary () {
         const handleMouseLeave = () => {
             setActiveStock(null);
         };
+
         const buildChart = async () => {
             const chartOptions = {
                 layout: {textColor: 'black', background: {type: 'solid', color: 'white'}},
@@ -42,30 +43,45 @@ function MarketSummary () {
             const apiBaseUrl = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000/api'; //temporary until .env works
             const chart = createChart(container, chartOptions)
             chart.timeScale().applyOptions({timeVisible: true, secondsVisible: true})
-            const SNPSeries = chart.addLineSeries()
-            const DOWSeries = chart.addLineSeries()
-            const NDAQSeries = chart.addLineSeries()
+            const AMZNSeries = chart.addLineSeries()
+            const GOOGLSeries = chart.addLineSeries()
+            const AAPLSeries = chart.addLineSeries()
+            const METASeries = chart.addLineSeries()
+            const NFLXSeries = chart.addLineSeries()
 
-            var response = await axios.get(`${apiBaseUrl}/stock/chart/line/DOW/`)
-            var data = response.data.map(item => item.fields)
-            var datetime = ""
-            for (const datapoint of data) {
-                datetime = datetime.concat(datapoint.date.substring(0, 10), ' ', datapoint.date.substring(11, 19))
-                var time = Date.parse(datetime) / 1000
-                const price = parseFloat(datapoint.close)
-                DOWSeries.update({time: time, value: price})
-                datetime = ""
+            const symbols = ['AMZN', 'GOOGL', 'AAPL', 'META', 'NFLX'];
+
+            for (const symbol of symbols) {
+                var response = await axios.get(`${apiBaseUrl}/stock/chart/line/${symbol}/`)
+                var data = response.data.map(item => item.fields)
+                var datetime = ""
+                for (const datapoint of data) {
+                    datetime = datetime.concat(datapoint.date.substring(0, 10), ' ', datapoint.date.substring(11, 19))
+                    var time = Date.parse(datetime) / 1000
+                    const price = parseFloat(datapoint.close)
+                    switch(symbol) {
+                        case 'AMZN':
+                            AMZNSeries.update({time: time, value: price})
+                            break;
+                        case 'GOOGL':
+                            GOOGLSeries.update({time: time, value: price})
+                            break;
+                        case 'AAPL':
+                            AAPLSeries.update({time: time, value: price})
+                            break;
+                        case 'META':
+                            METASeries.update({time: time, value: price})
+                            break;
+                        case 'NFLX':
+                            NFLXSeries.update({time: time, value: price})
+                            break;
+                        default:
+                            break;
+                    }
+                    datetime = ""
+                }
             }
-            var response = await axios.get(`${apiBaseUrl}/stock/chart/line/NDAQ/`)
-            var data = response.data.map(item => item.fields)
-            var datetime = ""
-            for (const datapoint of data) {
-                datetime = datetime.concat(datapoint.date.substring(0, 10), ' ', datapoint.date.substring(11, 19))
-                var time = Date.parse(datetime) / 1000
-                const price = parseFloat(datapoint.close)
-                NDAQSeries.update({time: time, value: price})
-                datetime = ""
-            }
+
             chart.timeScale().fitContent()
         }
 

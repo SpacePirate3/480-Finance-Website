@@ -259,19 +259,21 @@ def fetch_stock_overview(symbol):
 
 def intraday_update():
     stocks = {
+        "Meta Platforms Inc.": "META",
         "Amazon": "AMZN",
         "Apple": "AAPL",
-        "Dell": "DELL",
-        "GameStop": "GME",
+        "Netflix": "NFLX",
         "Google": "GOOGL",
+        "Dell": "DELL",
         "Intel": "INTC",
         "Microsoft": "MSFT",
-        "Netflix": "NFLX",
         "NVIDIA": "NVDA",
+        "International Business Machines": "IBM",
+        "Advanced Micro Devices Inc": "AMD",
+        "HP Inc": "HPQ",
         "Tesla": "TSLA",
-        "S&P Global Inc.": "SPGI",
-        "Dow Inc.": "DOW",
-        "Nasdaq, Inc": "NDAQ",
+        "T-Mobile": "TMUS",
+        "Verizon": "VZ",
     }
 
     current_call_count = 0
@@ -293,19 +295,21 @@ def intraday_update():
 
 def daily_update():
     stocks = {
+        "Meta Platforms Inc.": "META",
         "Amazon": "AMZN",
         "Apple": "AAPL",
-        "Dell": "DELL",
-        "GameStop": "GME",
+        "Netflix": "NFLX",
         "Google": "GOOGL",
+        "Dell": "DELL",
         "Intel": "INTC",
         "Microsoft": "MSFT",
-        "Netflix": "NFLX",
         "NVIDIA": "NVDA",
+        "International Business Machines": "IBM",
+        "Advanced Micro Devices Inc": "AMD",
+        "HP Inc": "HPQ",
         "Tesla": "TSLA",
-        "S&P Global Inc.": "SPGI",
-        "Dow Inc.": "DOW",
-        "Nasdaq, Inc": "NDAQ",
+        "T-Mobile": "TMUS",
+        "Verizon": "VZ",
     }
 
     current_call_count = 0
@@ -330,19 +334,21 @@ def main():
     Fetches overview, daily, and intraday data for each stock.
     """
     stocks = {
+        "Meta Platforms Inc.": "META",
         "Amazon": "AMZN",
         "Apple": "AAPL",
-        "Dell": "DELL",
-        "GameStop": "GME",
+        "Netflix": "NFLX",
         "Google": "GOOGL",
+        "Dell": "DELL",
         "Intel": "INTC",
         "Microsoft": "MSFT",
-        "Netflix": "NFLX",
         "NVIDIA": "NVDA",
+        "International Business Machines": "IBM",
+        "Advanced Micro Devices Inc": "AMD",
+        "HP Inc": "HPQ",
         "Tesla": "TSLA",
-        "S&P Global Inc.": "SPGI",
-        "Dow Inc.": "DOW",
-        "Nasdaq, Inc": "NDAQ",
+        "T-Mobile": "TMUS",
+        "Verizon": "VZ",
     }
 
     current_call_count = 0
@@ -352,7 +358,7 @@ def main():
 
         #fetch_stock_overview(symbol) # Updates stock_overview table with most-recent day.
         #fetch_stock_data(symbol, 'historical')
-        #fetch_stock_data(symbol, 'intraday')
+        fetch_stock_data(symbol, 'intraday')
 
         current_call_count += 1  # Increment by the number of calls made
 
