@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import './PopularStocks.css';
 import '../Utility.css'
-import { renderTableRow, fetchAllStockData } from '../Utility';
+import { renderTableRow, renderTableRowsWithDataPadding, fetchAllStockData} from '../Utility';
 
 function PopularStocks() {
     const [stocks, setStocks] = useState([]);
     const [topMovers, setTopMovers] = useState([]);
     const [topGainers, setTopGainers] = useState([]);
+    const [topLosers, setTopLosers] = useState([]);
     const apiBaseUrl = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000/api';
 
     const fetchData = async () => {
@@ -14,6 +15,7 @@ function PopularStocks() {
         setStocks(updatedStocks);
         updateTopMovers(updatedStocks);
         updateTopGainers(updatedStocks);
+        updateTopLosers(updatedStocks);
     };
 
     useEffect(() => {
@@ -23,10 +25,8 @@ function PopularStocks() {
     }, []);
 
     const updateTopMovers = (updatedStocks) => {
-        const excludedSymbols = ['DOW', 'NDAQ', 'SPGI']; // List of symbols to exclude
     
         const movers = updatedStocks
-            .filter(stock => !excludedSymbols.includes(stock.fields.symbol)) // Exclude specified symbols
             .sort((a, b) => parseFloat(b.percentChange) - parseFloat(a.percentChange))
             .slice(0, 6);
         
@@ -36,8 +36,19 @@ function PopularStocks() {
     const updateTopGainers = (updatedStocks) => {
         const gainers = updatedStocks
             .filter(stock => parseFloat(stock.change) > 0)
-            .sort((a, b) => parseFloat(b.percentChange) - parseFloat(a.percentChange));
+            .sort((a, b) => parseFloat(b.percentChange) - parseFloat(a.percentChange))
+            .slice(0, 6);
+
         setTopGainers(gainers);
+    };
+
+    const updateTopLosers = (updatedStocks) => {
+        const losers = updatedStocks
+            .filter(stock => parseFloat(stock.change) < 0)
+            .sort((a, b) => parseFloat(a.percentChange) - parseFloat(b.percentChange))
+            .slice(0, 6); // Adjust the number of top losers as needed
+    
+        setTopLosers(losers);
     };
 
     const renderStockButton = (stock, index) => {
@@ -67,14 +78,14 @@ function PopularStocks() {
     };
 
     return (
-        <div className="stocks-container">
-            <div className="popular-stocks-section">
+        <div className="flex-container"> {/* Use shared container class */}
+            <div className="flex-component"> {/* Use shared class for left section */}
                 <h2>POPULAR STOCKS</h2>
                 <div className="popular-stocks">
                     {stocks.map(renderStockButton)}
                 </div>
             </div>
-            <div className="movers-gainers-container">
+            <div className="flex-table"> {/* Use shared class for right section, adjusted for content */}
                 <div className="top-movers-section">
                     <h2>TOP MOVERS</h2>
                     <div className="table">
@@ -84,7 +95,7 @@ function PopularStocks() {
                             <span>CHG (USD)</span>
                             <span>%CHG</span>
                         </div>
-                        {topMovers.map(renderTableRow)}
+                        {renderTableRowsWithDataPadding(topMovers, renderTableRow)}
                     </div>
                 </div>
                 <div className="top-gainers-section">
@@ -96,7 +107,19 @@ function PopularStocks() {
                             <span>CHG (USD)</span>
                             <span>%CHG</span>
                         </div>
-                        {topGainers.map(renderTableRow)}
+                        {renderTableRowsWithDataPadding(topGainers, renderTableRow)}
+                    </div>
+                </div>
+                <div className="top-losers-section">
+                    <h2>TOP LOSERS</h2>
+                    <div className="table">
+                        <div className="table-header">
+                            <span>SYMBOL</span>
+                            <span>LAST (USD)</span>
+                            <span>CHG (USD)</span>
+                            <span>%CHG</span>
+                        </div>
+                        {renderTableRowsWithDataPadding(topLosers, renderTableRow)}
                     </div>
                 </div>
             </div>

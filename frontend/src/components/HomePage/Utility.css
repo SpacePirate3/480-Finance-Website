@@ -1,3 +1,6 @@
+/*
+    Table styles
+*/
 .table {
     background-color: #f2f2f2;
     border-radius: 8px;
@@ -27,4 +30,48 @@
     background-color: #b9f7fc;
     box-shadow: 0 6px 12px 0 rgba(0, 0, 0, 0.2);
     cursor: pointer;
+}
+
+
+/*
+    Container Styles
+*/
+/* Container for both MarketSummary and PopularStocks */
+.flex-container {
+    display: flex;
+    color: #232A31;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    align-items: flex-start;
+}
+
+/* Left section (2/3 width) */
+.flex-component {
+    flex: 2;
+    margin: 10px;
+    padding: 20px;
+    background: #ffffff;
+    border-radius: 20px;
+}
+
+/* Right section (1/3 width) */
+.flex-table {
+    flex: 1;
+    display: flex;
+    margin: 10px;
+    flex-direction: column;
+    padding: 20px;
+    background: #ffffff;
+    border-radius: 20px;
+}
+
+
+/*
+    Data Visualization Styles
+*/
+.stock-change-positive {
+    color: #4CAF50;
+}
+
+.stock-change-negative {
+    color: #F44336;
 }
