@@ -1,18 +1,18 @@
 import axios from 'axios';
 import './Utility.css'
-
+import React from "react";
 export const renderTableRow = (stock, index) => {
     return (
-        <div className="row" key={index}>
-            <span>{stock.symbol}</span>
-            <span>{stock.price}</span>
-            <span className={stock.change > 0 ? 'stock-change-positive' : 'stock-change-negative'}>
-                {stock.change > 0 ? `+${stock.change}` : stock.change}
-            </span>
-            <span className={stock.percentChange > 0 ? 'stock-change-positive' : 'stock-change-negative'}>
-                {stock.percentChange}%
-            </span>
-        </div>
+            <div className="row" key={index}>
+                <span>{stock.symbol}</span>
+                <span>{stock.price}</span>
+                <span className={stock.change > 0 ? 'stock-change-positive' : 'stock-change-negative'}>
+                    {stock.change > 0 ? `+${stock.change}` : stock.change}
+                </span>
+                <span className={stock.percentChange > 0 ? 'stock-change-positive' : 'stock-change-negative'}>
+                    {stock.percentChange}%
+                </span>
+            </div>
     );
 };
 
