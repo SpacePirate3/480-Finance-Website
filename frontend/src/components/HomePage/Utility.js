@@ -1,19 +1,43 @@
 import axios from 'axios';
 import './Utility.css'
-import React from "react";
+
 export const renderTableRow = (stock, index) => {
-    return (
-            <div className="row" key={index}>
-                <span>{stock.symbol}</span>
-                <span>{stock.price}</span>
-                <span className={stock.change > 0 ? 'stock-change-positive' : 'stock-change-negative'}>
-                    {stock.change > 0 ? `+${stock.change}` : stock.change}
-                </span>
-                <span className={stock.percentChange > 0 ? 'stock-change-positive' : 'stock-change-negative'}>
-                    {stock.percentChange}%
-                </span>
+    // Check if stock data is provided
+    if (!stock) {
+        return (
+            <div className="row empty-row" key={index}>
+                <span>—</span>
+                <span>—</span>
+                <span>—</span>
+                <span>—</span>
             </div>
+        );
+    }
+
+    return (
+        <div className="row" key={index}>
+            <span>{stock.symbol || '—'}</span>
+            <span>{stock.price || '—'}</span>
+            <span className={stock.change > 0 ? 'stock-change-positive' : 'stock-change-negative'}>
+                {stock.change ? (stock.change > 0 ? `+${stock.change}` : stock.change) : '—'}
+            </span>
+            <span className={stock.percentChange > 0 ? 'stock-change-positive' : 'stock-change-negative'}>
+                {stock.percentChange ? `${stock.percentChange}%` : '—'}
+            </span>
+        </div>
     );
+};
+
+export const renderTableRowsWithDataPadding = (data, renderRowFunc) => {
+    const rowsToRender = 6;
+    const paddedData = [...data];
+
+    // Pad the array with `undefined` to ensure it has 6 items
+    for (let i = data.length; i < rowsToRender; i++) {
+        paddedData.push(undefined); // Add `undefined` for missing items
+    }
+
+    return paddedData.map((item, index) => renderRowFunc(item, index));
 };
 
 export const fetchAllStockData = async (apiBaseUrl) => {
