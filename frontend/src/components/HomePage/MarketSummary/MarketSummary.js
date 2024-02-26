@@ -13,10 +13,10 @@ function MarketSummary () {
     const [indexes, setIndexes] = useState([])
 
     const fetchData = async () => {
-        const specificSymbols = ['AMZN', 'GOOGL', 'AAPL', 'META', 'NFLX'];
-        const updatedIndexes = await fetchSpecificIndexes(apiBaseUrl, specificSymbols);
-        setIndexes(updatedIndexes);
-    }
+    const specificSymbols = ['AMZN', 'GOOGL', 'AAPL', 'META', 'NFLX'];
+    const updatedIndexes = await fetchSpecificIndexes(apiBaseUrl, specificSymbols);
+    setIndexes(updatedIndexes);
+}
 
         useEffect(() => {
             fetchData();

@@ -24,6 +24,7 @@
 
 .popular-stocks-section {
     flex: 2;
+    margin: 20px;
 }
 
 .movers-gainers-container {
@@ -38,13 +39,14 @@
     flex: 1;
     flex-direction: column;
     height: fit-content;
+    margin: 20px;
 }
 
 .top-gainers-section {
     flex: 1;
     flex-direction: column;
     height: fit-content;
-    /* ... any additional styles ... */
+    margin: 20px;
 }
 
 .popular-stocks {

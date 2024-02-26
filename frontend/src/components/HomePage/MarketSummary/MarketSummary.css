@@ -43,6 +43,7 @@
     flex: 1;
     flex-direction: column;
     height: fit-content;
+    margin: 20px;
 }
 
 .stock-change-positive {
