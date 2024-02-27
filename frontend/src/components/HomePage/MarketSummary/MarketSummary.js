@@ -42,12 +42,17 @@ function MarketSummary () {
             const apiBaseUrl = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000/api'; //temporary until .env works
             const chart = createChart(container, chartOptions)
             chart.timeScale().applyOptions({timeVisible: true, secondsVisible: true})
+            const colors = ['#FF9A00', '#2BA24C', '#FFFFFF', '#1877F2','#E50914' ]
             const AMZNSeries = chart.addLineSeries()
+            AMZNSeries.applyOptions({color: colors[0]})
             const GOOGLSeries = chart.addLineSeries()
+            GOOGLSeries.applyOptions({color: colors[1]})
             const AAPLSeries = chart.addLineSeries()
+            AAPLSeries.applyOptions({color: colors[2]})
             const METASeries = chart.addLineSeries()
+            METASeries.applyOptions({color:colors[3]})
             const NFLXSeries = chart.addLineSeries()
-
+            NFLXSeries.applyOptions({color:colors[4]})
             const symbols = ['AMZN', 'GOOGL', 'AAPL', 'META', 'NFLX'];
 
             for (const symbol of symbols) {
