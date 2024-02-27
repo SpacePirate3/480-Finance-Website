@@ -77,7 +77,7 @@ def fetch_stock_data(symbol, fetch_type="historical", interval_min=1):
         elif fetch_type == "intraday":
             function = "TIME_SERIES_INTRADAY"
             interval_str = f"{interval_min}min"  # Format interval as a string, i.e. "1min".
-            output_size = "compact"  # Always use compact for intraday
+            output_size = "full"  # Always use compact for intraday
             querystring = {
                 "function": function,
                 "symbol": symbol,

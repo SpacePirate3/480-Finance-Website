@@ -9,7 +9,6 @@
 }
 
 .stock-chart {
-    display: flex;
     height: 500px;
     background: #1e1e1e;
 }
