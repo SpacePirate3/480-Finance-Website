@@ -125,4 +125,3 @@ export const fetchSpecificIndexes = async (apiBaseUrl, symbols) => {
         return [];
     }
 };
-

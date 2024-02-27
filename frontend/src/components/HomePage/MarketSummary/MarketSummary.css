@@ -1,53 +1,35 @@
-.market-summary {
+.market-container {
     display: flex;
-    background: #ffffff;
+    flex-direction: row; /* Ensure the items are laid out in a row */
+    justify-content: space-between; /* Distribute space between and around content items */
+    align-items: stretch; /* Stretch items to fill the container */
     color: #232A31;
-    padding: 20px;
-    margin: 20px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    align-items: flex-start;
-    margin-left: 35px;
+    background: #ffffff;
+    border-radius: 20px;
+    margin: 10px;
+    overflow: hidden; /* Add this to ensure no overflow */
 }
 
-.graph-area {
-    flex: 2;
-    padding: 20px;
+.flex-table, .flex-component {
+    display: flex;
+    flex-direction: column;
+    flex: 1; /* Adjust this value to control the space distribution */
 }
 
-.market-summary h2,
-.market-summary h3 {
-    margin: 0;
-    padding: 0;
+.flex-table {
+    max-width: 33%; /* Limit the table width to take up 1/3 of the space */
+}
+
+.flex-component {
+    flex-grow: 2; /* Allow the graph to grow and fill the remaining space */
+    padding: 0; /* Remove padding if any */
+    margin: 0; /* Remove margin to allow the graph to fill the space */
 }
 
 .stock-chart {
-    height: 500px;
-    background: #1e1e1e;
-}
-
-.stock-chart.active {
-    background: green;
-}
-
-.indexes-container {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    border-left: 4px solid #82D781;
-    padding: 20px;
-}
-
-.indexes-section {
-    flex: 1;
-    flex-direction: column;
-    height: fit-content;
-}
-
-.stock-change-positive {
-    color: #4CAF50;
-}
-
-.stock-change-negative {
-    color: #F44336;
+    width: 100%; /* Ensure the graph container fills the width */
+    height: 100%; /* Ensure the graph container fills the height */
+    border: 8px;
+    border-radius: 20px;
 }
