@@ -49,6 +49,7 @@ function MarketSummary () {
             timeVisible: true,
             secondsVisible: true,
             fixRightEdge: true,
+            height: 500,
             ticksVisible: true
         })
         const colors = ['#FF9900', '#2BA24C', '#000000', '#1178F2', '#D91921']

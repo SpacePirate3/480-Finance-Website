@@ -22,14 +22,13 @@
 }
 
 .flex-component {
-    flex-grow: 2; /* Allow the graph to grow and fill the remaining space */
-    padding: 0; /* Remove padding if any */
-    margin: 0; /* Remove margin to allow the graph to fill the space */
+    flex-grow: 2; /* Allow the right side to take up remaining space */
+    display: flex; /* Use flexbox to manage children */
+    flex-direction: column; /* Stack children vertically */
 }
 
 .stock-chart {
-    width: 100%; /* Ensure the graph container fills the width */
-    height: 100%; /* Ensure the graph container fills the height */
-    border: 8px;
-    border-radius: 20px;
+    flex-grow: 1; /* Allow the chart to fill the container */
+    width: 100%; /* Fill the width of its parent */
+    min-height: 500px; /* Or any minimum height you prefer */
 }
