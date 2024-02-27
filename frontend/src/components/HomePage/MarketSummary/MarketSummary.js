@@ -36,8 +36,7 @@ function MarketSummary () {
         const buildChart = async () => {
             const chartOptions = {
                 layout: {textColor: 'black', background: {type: 'solid', color: 'white'}},
-                height: 500,
-                width: 1000
+                height: 500
             };
             const container = document.getElementsByClassName("stock-chart")[0]
             const apiBaseUrl = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000/api'; //temporary until .env works
@@ -52,13 +51,13 @@ function MarketSummary () {
             const symbols = ['AMZN', 'GOOGL', 'AAPL', 'META', 'NFLX'];
 
             for (const symbol of symbols) {
-                var response = await axios.get(`${apiBaseUrl}/stock/chart/line/${symbol}/`)
+                var response = await axios.get(`${apiBaseUrl}/stock/chart/line/intraday/${symbol}/`)
                 var data = response.data.map(item => item.fields)
                 var datetime = ""
                 for (const datapoint of data) {
                     datetime = datetime.concat(datapoint.date.substring(0, 10), ' ', datapoint.date.substring(11, 19))
                     var time = Date.parse(datetime) / 1000
-                    const price = parseFloat(datapoint.close)
+                    const price = parseFloat(datapoint.close) - parseFloat(datapoint.open)
                     switch(symbol) {
                         case 'AMZN':
                             AMZNSeries.update({time: time, value: price})
@@ -83,6 +82,8 @@ function MarketSummary () {
             }
 
             chart.timeScale().fitContent()
+            var scale = chart.timeScale().getVisibleLogicalRange()
+            chart.timeScale().setVisibleLogicalRange({from: scale.to - 30, to: scale.to})
         }
 
         return (
