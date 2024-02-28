@@ -22,7 +22,9 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('api/stock/overview/<str:symbol>/', views.stock_overview, name='stock_overview'),
+    path('api/stock/overview/simple/<str:symbol>/', views.stock_overview_simple, name='stock_overview_simple'),
     path('api/stock/historical/<str:symbol>/', views.historical_data, name='historical_data'),
+    path('api/stock/historical/latest/<str:symbol>/', views.latest_historical_data, name='latest_historical_data'),
     path('api/stock/intraday/<str:symbol>/', views.intraday_data, name='intraday_data'),
     path('api/stock/list/', views.stock_list, name='stock_list'),
     path('api/stock/chart/candlestick/intraday/<str:symbol>/<int:period>/', views.candlestick_chart_data_intraday, name='chart_candlestick'),

@@ -55,7 +55,7 @@ function PopularStocks() {
         console.log('Stock object:', stock); // Add this line to see the stock object structure
         const changeClass = parseFloat(stock.change) > 0 ? 'stock-change-positive' : 'stock-change-negative';
         const percentChangeClass = parseFloat(stock.percentChange) > 0 ? 'stock-change-positive' : 'stock-change-negative';
-        const { name, symbol } = stock.fields;
+        const { name, symbol } = stock;
         
         return (
             <div key={index} className="stock-button-popular">

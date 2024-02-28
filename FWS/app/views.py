@@ -6,6 +6,7 @@ from django.core.serializers import serialize
 from django.urls import path
 from . import views
 from FWS import stock_data_pull
+
 def stock_overview(request, symbol):
     try:
         stock = StockOverview.objects.get(symbol=symbol)
@@ -14,6 +15,13 @@ def stock_overview(request, symbol):
         data_dict = json.loads(data_json)
         # Since we have only one stock, we can return the first item in the list
         return JsonResponse(data_dict[0], safe=False)
+    except StockOverview.DoesNotExist:
+        return JsonResponse({'error': 'Stock not found'}, status=404)
+    
+def stock_overview_simple(request, symbol):
+    try:
+        stock = StockOverview.objects.values('name', 'symbol').get(symbol=symbol)
+        return JsonResponse(stock)
     except StockOverview.DoesNotExist:
         return JsonResponse({'error': 'Stock not found'}, status=404)
 
@@ -32,6 +40,22 @@ def historical_data(request, symbol):
         data_json = serialize('json', data)
         data_dict = json.loads(data_json)  # Convert JSON string to dictionary
         return JsonResponse(data_dict, safe=False)
+    except StockOverview.DoesNotExist:
+        return JsonResponse({'error': 'Stock not found'}, status=404)
+
+def latest_historical_data(request, symbol):
+    try:
+        stock = StockOverview.objects.get(symbol=symbol)
+        # Fetch only the latest historical data entry for the stock
+        latest_data = HistoricalData.objects.filter(stock_id=stock.id).order_by('-date').first()
+        if latest_data:
+            # Serialize the latest historical data to JSON and parse it to a dictionary
+            data_json = serialize('json', [latest_data])  # Wrap latest_data in a list to serialize
+            data_dict = json.loads(data_json)
+            # Return the first item in the list since we know there's only one
+            return JsonResponse(data_dict[0], safe=False)
+        else:
+            return JsonResponse({'error': 'No historical data found for this stock'}, status=404)
     except StockOverview.DoesNotExist:
         return JsonResponse({'error': 'Stock not found'}, status=404)
 

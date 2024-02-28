@@ -48,22 +48,21 @@ export const fetchAllStockData = async (apiBaseUrl) => {
 
         for (const symbol of stockSymbols) {
             try {
-                const overviewResponse = await axios.get(`${apiBaseUrl}/stock/overview/${symbol}/`);
+                const overviewResponse = await axios.get(`${apiBaseUrl}/stock/overview/simple/${symbol}/`);
                 const intradayResponse = await axios.get(`${apiBaseUrl}/stock/intraday/${symbol}/`);
-                const historicalResponse = await axios.get(`${apiBaseUrl}/stock/historical/${symbol}/`);
+                const historicalResponse = await axios.get(`${apiBaseUrl}/stock/historical/latest/${symbol}/`);
 
-                // Assuming the first entry in the historical data is the most recent
-                const latestHistorical = historicalResponse.data[0]?.fields; // Safely accessing fields
-                const latestIntraday = intradayResponse.data[0]?.fields; // Safely accessing fields for intraday data
+                // Directly access the 'fields' since only one record is returned
+                const latestHistorical = historicalResponse.data.fields;
+                const latestIntraday = intradayResponse.data[0]?.fields;
 
                 if (latestHistorical && latestIntraday) {
-                    // Calculate change and percent change
                     const change = parseFloat(latestIntraday.close) - parseFloat(latestHistorical.open);
                     const percentChange = (change / parseFloat(latestHistorical.open)) * 100;
 
                     const updatedStock = {
-                        symbol,
-                        ...overviewResponse.data, // Assuming the fields come within a 'fields' object
+                        name: overviewResponse.data.name,
+                        symbol: overviewResponse.data.symbol,
                         price: latestIntraday.close,
                         change: change.toFixed(2),
                         percentChange: percentChange.toFixed(2),
@@ -83,31 +82,28 @@ export const fetchAllStockData = async (apiBaseUrl) => {
     }
 };
 
+
 export const fetchSpecificIndexes = async (apiBaseUrl, symbols) => {
     try {
         const updatedIndexes = [];
 
         for (const symbol of symbols) {
             try {
-                // Fetch the latest overview data
-                const overviewResponse = await axios.get(`${apiBaseUrl}/stock/overview/${symbol}/`);
-                // Fetch the latest intraday data
+                const overviewResponse = await axios.get(`${apiBaseUrl}/stock/overview/simple/${symbol}/`);
                 const intradayResponse = await axios.get(`${apiBaseUrl}/stock/intraday/${symbol}/`);
-                // Fetch the historical data
-                const historicalResponse = await axios.get(`${apiBaseUrl}/stock/historical/${symbol}/`);
+                const historicalResponse = await axios.get(`${apiBaseUrl}/stock/historical/latest/${symbol}/`);
 
-                // Assuming the historical data is sorted by date descending, so the first item is the latest
-                const historicalData = historicalResponse.data[0]?.fields; // Safely accessing fields
-                const intradayData = intradayResponse.data[0]?.fields; // Safely accessing fields for intraday data
+                // Directly access the 'fields' since only one record is returned
+                const historicalData = historicalResponse.data.fields;
+                const intradayData = intradayResponse.data[0]?.fields;
 
                 if (historicalData && intradayData) {
-                    // Calculate change and percent change using the latest historical open and latest intraday close
                     const change = parseFloat(intradayData.close) - parseFloat(historicalData.open);
                     const percentChange = (change / parseFloat(historicalData.open)) * 100;
 
                     const updatedIndex = {
-                        symbol,
-                        ...overviewResponse.data, // Adjust according to the actual data structure
+                        name: overviewResponse.data.name,
+                        symbol: overviewResponse.data.symbol,
                         price: intradayData.close,
                         change: change.toFixed(2),
                         percentChange: percentChange.toFixed(2),
@@ -127,6 +123,7 @@ export const fetchSpecificIndexes = async (apiBaseUrl, symbols) => {
         return [];
     }
 };
+
 
 export const formatVolume = (volume) => {
     if (volume >= 1e9) {
