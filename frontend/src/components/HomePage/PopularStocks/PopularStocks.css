@@ -67,3 +67,8 @@
     align-items: flex-end;
     justify-content: center;
 }
+
+.stock-info .stock-volume{
+    font-size: 12px;
+    color: #666;
+}

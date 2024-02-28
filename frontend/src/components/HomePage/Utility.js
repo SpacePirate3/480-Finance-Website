@@ -67,6 +67,7 @@ export const fetchAllStockData = async (apiBaseUrl) => {
                         price: latestIntraday.close,
                         change: change.toFixed(2),
                         percentChange: percentChange.toFixed(2),
+                        volume: latestHistorical.volume,
                     };
                     updatedStocks.push(updatedStock);
                 }
@@ -110,6 +111,7 @@ export const fetchSpecificIndexes = async (apiBaseUrl, symbols) => {
                         price: intradayData.close,
                         change: change.toFixed(2),
                         percentChange: percentChange.toFixed(2),
+                        volume: historicalData.volume,
                     };
 
                     updatedIndexes.push(updatedIndex);
@@ -123,5 +125,15 @@ export const fetchSpecificIndexes = async (apiBaseUrl, symbols) => {
     } catch (error) {
         console.error('Error fetching specific indexes:', error);
         return [];
+    }
+};
+
+export const formatVolume = (volume) => {
+    if (volume >= 1e9) {
+        return (volume / 1e9).toFixed(3) + 'B';
+    } else if (volume >= 1e6) {
+        return (volume / 1e6).toFixed(3) + 'M';
+    } else {
+        return volume.toLocaleString();
     }
 };

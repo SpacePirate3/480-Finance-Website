@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './PopularStocks.css';
 import '../Utility.css'
-import { renderTableRow, renderTableRowsWithDataPadding, fetchAllStockData} from '../Utility';
+import { renderTableRow, renderTableRowsWithDataPadding, fetchAllStockData, formatVolume} from '../Utility';
 
 function PopularStocks() {
     const [stocks, setStocks] = useState([]);
@@ -59,11 +59,12 @@ function PopularStocks() {
         
         return (
             <div key={index} className="stock-button-popular">
-                <div className="stock-logo"></div>
+                <div className="stock-logo"></div> {/* Consider adding an image here */}
                 <div className="stock-info-wrapper">
-                    <div className="company-name">{name}</div> {/* Use destructured 'name' */}
-                    <div className="stock-symbol">{symbol}</div> {/* Use destructured 'symbol' */}
+                    <div className="company-name">{name}</div>
+                    <div className="stock-symbol">{symbol}</div>
                     <div className="stock-price">{stock.price} USD</div>
+                    <div className="stock-volume">VOL {stock.volume ? formatVolume(stock.volume) : '—'}</div>
                 </div>
                 <div className="stock-change-group">
                     <div className={`stock-change ${changeClass}`}>
