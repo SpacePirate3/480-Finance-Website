@@ -1,22 +1,34 @@
 import React, {useEffect} from 'react';
 import './App.css';
 import Header from './Header/Header';
+import { BrowserRouter} from 'react-router-dom';
+import {Route, Routes} from 'react-router-dom'
 
+import RealHome from './RealHome/RealHome'
+//import DetailedPage from './DetailedPage'
 import MarketSummary from './HomePage/MarketSummary/MarketSummary'
 import Stocks from './HomePage/PopularStocks/PopularStocks'
 import {createChart} from "lightweight-charts"
 import axios from "axios"
+import DetailedPage from './DetailedPage/DetailedPage'
 function App() {
 
     useEffect(() => {
 
     }, []);
   return (
-    <div>
-      <Header />
-      <MarketSummary />
-      <Stocks />
-    </div>
+
+    <>
+        <Routes>
+          <Route path="/" element={<RealHome/>}/>
+          <Route path="/details/:stockSymbol" element={<DetailedPage/>}/>
+        </Routes>
+    </>
+
+                  
+          
+     
+    
   );
 
 }

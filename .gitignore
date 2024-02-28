@@ -1,3 +1,5 @@
 template/apps/core/
 .env
 *.pyc
+FWS/FWS/environ.env
+requirements.txt
