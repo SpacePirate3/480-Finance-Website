@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './PopularStocks.css';
 import '../Utility.css'
 import { renderTableRow, renderTableRowsWithDataPadding, fetchAllStockData, formatVolume} from '../Utility';
+import { Link } from "react-router-dom";
 
 function PopularStocks() {
     const [stocks, setStocks] = useState([]);
@@ -58,6 +59,7 @@ function PopularStocks() {
         const { name, symbol } = stock;
         
         return (
+            <Link to={`./Details/${stock.symbol}`}>
             <div key={index} className="stock-button-popular">
                 <div className="stock-logo"></div> {/* Consider adding an image here */}
                 <div className="stock-info-wrapper">
@@ -75,6 +77,7 @@ function PopularStocks() {
                     </div>
                 </div>
             </div>
+            </Link>
         );
     };
 

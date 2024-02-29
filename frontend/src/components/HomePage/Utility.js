@@ -1,5 +1,6 @@
 import axios from 'axios';
 import './Utility.css'
+import { Link } from "react-router-dom";
 
 export const renderTableRow = (stock, index) => {
     // Check if stock data is provided
@@ -15,6 +16,7 @@ export const renderTableRow = (stock, index) => {
     }
 
     return (
+        <Link to={`./Details/${stock.symbol}`}>
         <div className="row" key={index}>
             <span>{stock.symbol || '—'}</span>
             <span>{stock.price || '—'}</span>
@@ -25,6 +27,7 @@ export const renderTableRow = (stock, index) => {
                 {stock.percentChange ? `${stock.percentChange}%` : '—'}
             </span>
         </div>
+        </Link>
     );
 };
 

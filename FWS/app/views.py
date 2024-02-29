@@ -105,6 +105,7 @@ def candlestick_chart_data_intraday(request, symbol, period):
         return JsonResponse(chart, safe=False)
     except StockOverview.DoesNotExist:
         return JsonResponse({'error': 'Stock not found'}, status=404)
+    
 def candlestick_chart_data_daily(request, symbol, period):
     try:
         stock = StockOverview.objects.get(symbol=symbol)
@@ -126,7 +127,6 @@ def candlestick_chart_data_daily(request, symbol, period):
         return JsonResponse(chart, safe=False)
     except StockOverview.DoesNotExist:
         return  JsonResponse({'error': 'Stock not found'}, status=404)
-
 
 def line_chart_data_intraday(request, symbol):
     try:
