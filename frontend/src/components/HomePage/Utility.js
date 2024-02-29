@@ -49,12 +49,12 @@ export const fetchAllStockData = async (apiBaseUrl) => {
         for (const symbol of stockSymbols) {
             try {
                 const overviewResponse = await axios.get(`${apiBaseUrl}/stock/overview/simple/${symbol}/`);
-                const intradayResponse = await axios.get(`${apiBaseUrl}/stock/intraday/${symbol}/`);
+                const intradayResponse = await axios.get(`${apiBaseUrl}/stock/intraday/latest/${symbol}/`); // Updated to use the new latest intraday data endpoint
                 const historicalResponse = await axios.get(`${apiBaseUrl}/stock/historical/latest/${symbol}/`);
 
-                // Directly access the 'fields' since only one record is returned
+                // Assuming both the historical and intraday latest endpoints return a single object directly accessible
                 const latestHistorical = historicalResponse.data.fields;
-                const latestIntraday = intradayResponse.data[0]?.fields;
+                const latestIntraday = intradayResponse.data.fields; // Adjusted for the expected response structure from the latest intraday endpoint
 
                 if (latestHistorical && latestIntraday) {
                     const change = parseFloat(latestIntraday.close) - parseFloat(latestHistorical.open);
@@ -82,7 +82,6 @@ export const fetchAllStockData = async (apiBaseUrl) => {
     }
 };
 
-
 export const fetchSpecificIndexes = async (apiBaseUrl, symbols) => {
     try {
         const updatedIndexes = [];
@@ -90,12 +89,11 @@ export const fetchSpecificIndexes = async (apiBaseUrl, symbols) => {
         for (const symbol of symbols) {
             try {
                 const overviewResponse = await axios.get(`${apiBaseUrl}/stock/overview/simple/${symbol}/`);
-                const intradayResponse = await axios.get(`${apiBaseUrl}/stock/intraday/${symbol}/`);
+                const intradayResponse = await axios.get(`${apiBaseUrl}/stock/intraday/latest/${symbol}/`); // Use the new endpoint
                 const historicalResponse = await axios.get(`${apiBaseUrl}/stock/historical/latest/${symbol}/`);
 
-                // Directly access the 'fields' since only one record is returned
                 const historicalData = historicalResponse.data.fields;
-                const intradayData = intradayResponse.data[0]?.fields;
+                const intradayData = intradayResponse.data.fields; // Assuming the endpoint returns a single object now
 
                 if (historicalData && intradayData) {
                     const change = parseFloat(intradayData.close) - parseFloat(historicalData.open);
@@ -123,7 +121,6 @@ export const fetchSpecificIndexes = async (apiBaseUrl, symbols) => {
         return [];
     }
 };
-
 
 export const formatVolume = (volume) => {
     if (volume >= 1e9) {

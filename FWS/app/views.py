@@ -69,6 +69,22 @@ def intraday_data(request, symbol):
     except StockOverview.DoesNotExist:
         return JsonResponse({'error': 'Stock not found'}, status=404)
 
+def latest_intraday_data(request, symbol):
+    try:
+        stock = StockOverview.objects.get(symbol=symbol)
+        # Fetch only the latest intraday data entry for the stock
+        latest_data = IntradayData.objects.filter(stock_id=stock.id).order_by('-date').first()
+        if latest_data:
+            # Serialize the latest intraday data to JSON and parse it to a dictionary
+            data_json = serialize('json', [latest_data])  # Wrap latest_data in a list to serialize
+            data_dict = json.loads(data_json)
+            # Return the first item in the list since we know there's only one
+            return JsonResponse(data_dict[0], safe=False)
+        else:
+            return JsonResponse({'error': 'No intraday data found for this stock'}, status=404)
+    except StockOverview.DoesNotExist:
+        return JsonResponse({'error': 'Stock not found'}, status=404)
+
 def candlestick_chart_data_intraday(request, symbol, period):
     try:
         stock = StockOverview.objects.get(symbol=symbol)
