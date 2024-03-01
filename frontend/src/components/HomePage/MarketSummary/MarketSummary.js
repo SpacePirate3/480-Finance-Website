@@ -30,9 +30,18 @@ function MarketSummary() {
 
     const handleMouseEnter = (index) => {
         setActiveStock(indexes[index]);
-        seriesRef.current[index].applyOptions({
-            lineWidth: 6,
-            topColor: `${seriesRef.current[index].options().lineColor}99`, // Increase opacity for the area fill
+        seriesRef.current.forEach((series, idx) => {
+            if (idx === index) {
+                series.applyOptions({
+                    lineWidth: 6,
+                    topColor: `${colors[index]}99`, // Increase opacity for the hovered stock
+                });
+            } else {
+                series.applyOptions({
+                    lineWidth: 1,
+                    topColor: `${colors[idx]}1A`, // Reduce opacity for the other stocks (1A is ~10% opacity)
+                });
+            }
         });
     };
     
