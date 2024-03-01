@@ -1,4 +1,4 @@
-import React, {useState, useEffect, Component} from 'react';
+import React, {useState, useEffect, Component, useRef} from 'react';
 import './MarketSummary.css';
 import '../Utility.css'
 import { renderTableRow, fetchSpecificIndexes } from '../Utility';
@@ -10,6 +10,8 @@ function MarketSummary () {
     const apiBaseUrl = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000/api';
     const [activeStock, setActiveStock] = useState(null);
     const [indexes, setIndexes] = useState([]);
+    const chartRef = useRef(null); // Use this ref to store the chart instance
+    const seriesRef = useRef([]); // Use this ref to store the series
     var series=[];
     const specificSymbols = ['AMZN', 'GOOGL', 'AAPL', 'META', 'NFLX'];
 
@@ -21,19 +23,21 @@ function MarketSummary () {
     useEffect(() => {
         fetchData();
         const interval = setInterval(fetchData, 60000); // Fetch data every minute
-        buildChart();
+        if (!chartRef.current) { // Check if chart has already been created
+            buildChart();
+        }
         return () => clearInterval(interval);
     }, []);
 
     const handleMouseEnter = (stock) => {
         setActiveStock(specificSymbols[stock]);
         alert(stock)
-        series[stock].applyOptions({lineWidth: 6})
+        seriesRef.current[stock].applyOptions({lineWidth: 6})
     };
 
     const handleMouseLeave = () => {
         setActiveStock(null);
-        for (const line of series) {
+        for (const line of seriesRef.current) {
             line.applyOptions({lineWidth: 3})
         }
     };
@@ -43,8 +47,10 @@ function MarketSummary () {
             layout: {textColor: 'black', background: {type: 'solid', color: 'white'}},
         };
         const container = document.getElementsByClassName("stock-chart")[0]
+        if (!container || chartRef.current) return; // Prevent duplicate charts
         const apiBaseUrl = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000/api'; //temporary until .env works
         const chart = createChart(container, chartOptions)
+        chartRef.current = chart; // Store the chart instance in the ref
         chart.timeScale().applyOptions({
             timeVisible: true,
             secondsVisible: true,
