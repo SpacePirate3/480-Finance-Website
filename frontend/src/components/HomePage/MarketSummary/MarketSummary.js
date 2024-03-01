@@ -1,19 +1,18 @@
-import React, {useState, useEffect, Component, useRef} from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './MarketSummary.css';
-import '../Utility.css'
+import '../Utility.css';
 import { renderTableRow, fetchSpecificIndexes } from '../Utility';
-import {createChart} from "lightweight-charts";
-import axios from "axios";
-import {render} from "@testing-library/react";
+import { createChart } from 'lightweight-charts';
+import axios from 'axios';
 
-function MarketSummary () {
+function MarketSummary() {
     const apiBaseUrl = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000/api';
     const [activeStock, setActiveStock] = useState(null);
     const [indexes, setIndexes] = useState([]);
-    const chartRef = useRef(null); // Use this ref to store the chart instance
-    const seriesRef = useRef([]); // Use this ref to store the series
-    var series=[];
+    const chartRef = useRef(null);
+    const seriesRef = useRef([]);
     const specificSymbols = ['AMZN', 'GOOGL', 'AAPL', 'META', 'NFLX'];
+    const colors = ['#FF9900', '#2BA24C', '#000000', '#1178F2', '#D91921'];
 
     const fetchData = async () => {
         const updatedIndexes = await fetchSpecificIndexes(apiBaseUrl, specificSymbols);
@@ -22,94 +21,83 @@ function MarketSummary () {
 
     useEffect(() => {
         fetchData();
-        const interval = setInterval(fetchData, 60000); // Fetch data every minute
-        if (!chartRef.current) { // Check if chart has already been created
+        const interval = setInterval(fetchData, 60000);
+        if (!chartRef.current) {
             buildChart();
         }
         return () => clearInterval(interval);
     }, []);
 
-    const handleMouseEnter = (stock) => {
-        setActiveStock(specificSymbols[stock]);
-        alert(stock)
-        seriesRef.current[stock].applyOptions({lineWidth: 6})
+    const handleMouseEnter = (index) => {
+        setActiveStock(indexes[index]);
+        seriesRef.current[index].applyOptions({
+            lineWidth: 6,
+            topColor: `${seriesRef.current[index].options().lineColor}99`, // Increase opacity for the area fill
+        });
     };
-
+    
     const handleMouseLeave = () => {
         setActiveStock(null);
-        for (const line of seriesRef.current) {
-            line.applyOptions({lineWidth: 3})
-        }
+        seriesRef.current.forEach((series, idx) => {
+            series.applyOptions({
+                lineWidth: 3,
+                topColor: `${colors[idx]}33`, // Revert to original opacity for the area fill
+            });
+        });
     };
 
     const buildChart = async () => {
         const chartOptions = {
-            layout: {textColor: 'black', background: {type: 'solid', color: 'white'}},
+            layout: { textColor: 'black', background: { type: 'solid', color: 'white' } },
         };
-        const container = document.getElementsByClassName("stock-chart")[0]
-        if (!container || chartRef.current) return; // Prevent duplicate charts
-        const apiBaseUrl = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000/api'; //temporary until .env works
-        const chart = createChart(container, chartOptions)
-        chartRef.current = chart; // Store the chart instance in the ref
+        const container = document.getElementsByClassName('stock-chart')[0];
+        if (!container || chartRef.current) return;
+        const chart = createChart(container, chartOptions);
+        chartRef.current = chart;
         chart.timeScale().applyOptions({
             timeVisible: true,
             secondsVisible: true,
             fixRightEdge: true,
             height: 500,
             ticksVisible: true
-        })
-        const colors = ['#FF9900', '#2BA24C', '#000000', '#1178F2', '#D91921']
-        const AMZNSeries = chart.addLineSeries({color: colors[0]})
-        series.push(AMZNSeries)
-        const GOOGLSeries = chart.addLineSeries({color: colors[1]})
-        series.push(GOOGLSeries)
-        const AAPLSeries = chart.addLineSeries({color: colors[2]})
-        series.push(AAPLSeries)
-        const METASeries = chart.addLineSeries({color: colors[3]})
-        series.push(METASeries)
-        const NFLXSeries = chart.addLineSeries({color: colors[4]})
-        series.push(NFLXSeries)
-        const symbols = ['AMZN', 'GOOGL', 'AAPL', 'META', 'NFLX'];
-        for (const symbol of symbols) {
-            var response = await axios.get(`${apiBaseUrl}/stock/chart/line/intraday/${symbol}/`)
-            var data = response.data.map(item => item.fields)
-            var datetime = ""
-            for (const datapoint of data) {
-                datetime = datetime.concat(datapoint.date.substring(0, 10), ' ', datapoint.date.substring(11, 19))
-                var time = Date.parse(datetime) / 1000
-                const change = parseFloat(datapoint.open) - parseFloat(datapoint.close)
-                switch (symbol) {
-                    case 'AMZN':
-                        AMZNSeries.update({time: time, value: change})
-                        break;
-                    case 'GOOGL':
-                        GOOGLSeries.update({time: time, value: change})
-                        break;
-                    case 'AAPL':
-                        AAPLSeries.update({time: time, value: change})
-                        break;
-                    case 'META':
-                        METASeries.update({time: time, value: change})
-                        break;
-                    case 'NFLX':
-                        NFLXSeries.update({time: time, value: change})
-                        break;
-                    default:
-                        break;
-                }
-                datetime = ""
-            }
+        });
+        specificSymbols.forEach((symbol, index) => {
+            const series = chart.addAreaSeries({ 
+                lineColor: colors[index],
+                topColor: `${colors[index]}33`, // Lighter shade for the area fill (33 is the opacity in hex)
+                bottomColor: `${colors[index]}00`, // Transparent at the bottom
+                lineWidth: 3,
+            });
+            seriesRef.current.push(series);
+            fetchDataForSeries(apiBaseUrl, symbol, series);
+        });
+        await Promise.all(specificSymbols.map(symbol => fetchDataForSeries(apiBaseUrl, symbol, seriesRef.current[specificSymbols.indexOf(symbol)])));
+        chart.timeScale().fitContent(); // Adjust the time scale to fit the data
+    
+        // Zoom in to the last 30 data points
+        const logicalRange = chart.timeScale().getVisibleLogicalRange();
+        if (logicalRange) {
+            const zoomRange = { from: logicalRange.to - 30, to: logicalRange.to };
+            chart.timeScale().setVisibleLogicalRange(zoomRange);
         }
-        chart.timeScale().fitContent()
-        var scale = chart.timeScale().getVisibleLogicalRange()
-        chart.timeScale().setVisibleLogicalRange({from: scale.to - 30, to: scale.to})
-    }
+    };
+
+    const fetchDataForSeries = async (apiBaseUrl, symbol, series) => {
+        const response = await axios.get(`${apiBaseUrl}/stock/chart/line/intraday/${symbol}/`);
+        const data = response.data.map(item => item.fields);
+        const chartData = data.map(datapoint => {
+            const datetime = Date.parse(datapoint.date) / 1000;
+            const change = parseFloat(datapoint.open) - parseFloat(datapoint.close);
+            return { time: datetime, value: change };
+        });
+        series.setData(chartData);
+    };
 
     return (
         <div className="market-container">
-            <div className="flex-table"> {/* Now on the left but takes up 1/3 space, adjust class naming as needed */}
+            <div className="flex-table">
                 <h2>MARKET SUMMARY</h2>
-                <h3>{activeStock ? `${activeStock.name} | WED, FEB 7 2024 - 7:00 PM EST` : 'APPLE | WED, FEB 7 2024 - 7:00 PM EST'}</h3>
+                <h3>{activeStock ? `${activeStock.symbol} | WED, FEB 7 2024 - 7:00 PM EST` : 'FAANG | WED, FEB 7 2024 - 7:00 PM EST'}</h3>
                 <div className="table">
                     <div className="table-header">
                         <span>SYMBOL</span>
@@ -117,10 +105,18 @@ function MarketSummary () {
                         <span>CHG</span>
                         <span>%CHG</span>
                     </div>
-                    {indexes.map(renderTableRow)}
+                    {indexes.map((stock, index) => (
+                        <div
+                            key={index}
+                            onMouseEnter={() => handleMouseEnter(index)}
+                            onMouseLeave={handleMouseLeave}
+                        >
+                            {renderTableRow(stock)}
+                        </div>
+                    ))}
                 </div>
             </div>
-            <div className="flex-component"> {/* Now on the right but takes up 2/3 space, adjust class naming as needed */}
+            <div className="flex-component">
                 <div className={`stock-chart ${activeStock ? 'active' : ''}`}>
                 </div>
             </div>
