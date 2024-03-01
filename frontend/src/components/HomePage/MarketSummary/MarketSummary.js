@@ -105,8 +105,8 @@ function MarketSummary() {
     return (
         <div className="market-container">
             <div className="flex-table">
-                <h2>MARKET SUMMARY</h2>
-                <h3>{activeStock ? `${activeStock.symbol} | WED, FEB 7 2024 - 7:00 PM EST` : 'FAANG | WED, FEB 7 2024 - 7:00 PM EST'}</h3>
+                <h1>MARKET SUMMARY</h1>
+                <h2>{activeStock ? `${activeStock.symbol} | WED, FEB 7 2024 - 7:00 PM EST` : 'FAANG | WED, FEB 7 2024 - 7:00 PM EST'}</h2>
                 <div className="table">
                     <div className="table-header">
                         <span>SYMBOL</span>

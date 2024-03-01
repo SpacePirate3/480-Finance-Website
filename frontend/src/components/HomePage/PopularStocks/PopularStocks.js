@@ -84,14 +84,14 @@ function PopularStocks() {
     return (
         <div className="flex-container"> {/* Use shared container class */}
             <div className="flex-component"> {/* Use shared class for left section */}
-                <h2>POPULAR STOCKS</h2>
+                <h1>POPULAR STOCKS</h1>
                 <div className="popular-stocks">
                     {stocks.map(renderStockButton)}
                 </div>
             </div>
             <div className="flex-table"> {/* Use shared class for right section, adjusted for content */}
                 <div className="top-movers-section">
-                    <h2>TOP MOVERS</h2>
+                    <h1>TOP MOVERS</h1>
                     <div className="table">
                         <div className="table-header">
                             <span>SYMBOL</span>
@@ -103,7 +103,7 @@ function PopularStocks() {
                     </div>
                 </div>
                 <div className="top-gainers-section">
-                    <h2>TOP GAINERS</h2>
+                    <h1>TOP GAINERS</h1>
                     <div className="table">
                         <div className="table-header">
                             <span>SYMBOL</span>
@@ -115,7 +115,7 @@ function PopularStocks() {
                     </div>
                 </div>
                 <div className="top-losers-section">
-                    <h2>TOP LOSERS</h2>
+                    <h1>TOP LOSERS</h1>
                     <div className="table">
                         <div className="table-header">
                             <span>SYMBOL</span>
