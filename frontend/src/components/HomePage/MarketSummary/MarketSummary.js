@@ -33,7 +33,7 @@ function MarketSummary() {
         seriesRef.current.forEach((series, idx) => {
             if (idx === index) {
                 series.applyOptions({
-                    lineWidth: 6,
+                    lineWidth: 8,
                     topColor: `${colors[index]}99`, // Increase opacity for the hovered stock
                 });
             } else {

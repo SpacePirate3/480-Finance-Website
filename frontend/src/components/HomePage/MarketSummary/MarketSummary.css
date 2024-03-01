@@ -11,22 +11,6 @@
     overflow: hidden; /* Add this to ensure no overflow */
 }
 
-.flex-table, .flex-component {
-    display: flex;
-    flex-direction: column;
-    flex: 1; /* Adjust this value to control the space distribution */
-}
-
-.flex-table {
-    max-width: 33%; /* Limit the table width to take up 1/3 of the space */
-}
-
-.flex-component {
-    flex-grow: 2; /* Allow the right side to take up remaining space */
-    display: flex; /* Use flexbox to manage children */
-    flex-direction: column; /* Stack children vertically */
-}
-
 .stock-chart {
     flex-grow: 1; /* Allow the chart to fill the container */
     width: 100%; /* Fill the width of its parent */
