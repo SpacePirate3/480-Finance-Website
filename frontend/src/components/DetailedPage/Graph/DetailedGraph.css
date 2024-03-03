@@ -6,7 +6,7 @@
     background: #ffffff;
     border-radius: 20px;
     margin: 10px;
-    height:70vw
+    height:40vw;
 }
 .graph-area {
     width: 95%;
@@ -18,10 +18,35 @@
     background: #1e1e1e;
 }
 .ButtonSelectors {
-    width: 20%;
+    height: 100%
 }
-.TypeButtons {
-    clear:both;
+.TypeButtons > button {
+    margin: 10px;
+    height: 60px;
+    width: 40%;
+    background-color: #232A31;
+    color: #82D781;
+}
+.TimeButtons > button {
+    margin: 10px;
+    height: 60px;
+    width: 40%;
+    background-color: #232A31;
+    color: #82D781;
+}
+.IntradayPeriods > button {
+    margin: 10px;
+    height: 60px;
+    width: 24%;
+    background-color: #232A31;
+    color: #82D781;
+}
+.HistoricalPeriods > button {
+    margin: 10px;
+    height: 60px;
+    width: 25%;
+    background-color: #232A31;
+    color: #82D781;
 }
 .stock-chart.active {
     background: green;
