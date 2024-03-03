@@ -80,7 +80,9 @@
     .homeButton {
         margin-right: 70px;
     }
-
+    .homeButton {
+        color: #FFFFFF;
+    }
     /* Hover effect for Home button text */
     .homeButton:hover {
         position: relative;

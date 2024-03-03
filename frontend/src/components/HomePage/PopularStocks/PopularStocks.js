@@ -59,7 +59,7 @@ function PopularStocks() {
         const { name, symbol } = stock;
         
         return (
-            <Link to={`./Details/${stock.symbol}`}>
+            <Link to={`./Details/${stock.symbol}`} style={{textDecoration: 'none', color:'black'}}>
             <div key={index} className="stock-button-popular">
                 <div className="stock-logo"></div> {/* Consider adding an image here */}
                 <div className="stock-info-wrapper">
