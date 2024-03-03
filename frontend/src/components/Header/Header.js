@@ -1,9 +1,11 @@
 import React from 'react';
 import './Header.css';
+import {Link} from "react-router-dom";
 
 function Header() {
     return (
         <div className="backgroundRectangle">
+            <Link to={"/"}>
             <div className="logo">
                 <div className="graphic">
                     {/* Rectangles are ordered from smallest to largest, bottom to top */}
@@ -16,8 +18,9 @@ function Header() {
                     <div className="text textFinance">FINANCE</div>
                 </div>
             </div>
+            </Link>
             <div className="buttons">
-                <div className="text homeButton">HOME</div>
+                <Link to={"/"}><div className="text homeButton">HOME</div></Link>
                 <div className="text homeButton">ABOUT US</div>
                 <div className="hamburger-menu">
                     <div className="hamburger"></div>

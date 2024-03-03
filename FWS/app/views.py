@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 import json
 from django.http import JsonResponse, HttpResponse
 from .models import StockOverview, HistoricalData, IntradayData
@@ -88,20 +88,23 @@ def latest_intraday_data(request, symbol):
 def candlestick_chart_data_intraday(request, symbol, period):
     try:
         stock = StockOverview.objects.get(symbol=symbol)
-        intraday_data = IntradayData.objects.filter(stock_id=stock.id).order_by('-date')
-        count, open,  high, low, close, volume = 0
+        intraday_data = IntradayData.objects.filter(stock_id=stock.id).order_by('date')
+        count, open, high, low, close, volume = 0, 0, 0, 1000000000, 0, 0
         chart = list()
         for i in intraday_data:
             if i.high > high:
                 high = i.high
             if i.low < low:
                 low = i.low
-            if close == 0:
-                close = i.close
-            if count == (period):
+            if open == 0:
                 open = i.open
-                list.append([i.date, open, high, low, close])
-                count, open, high, low, close, volume = 0
+                date = i.date
+            if count >= (period):
+                close = i.close
+                toAppend = [date, high, low, open, close]
+                chart.append(toAppend)
+                count, open, high, low, close, volume = 0, 0, 0, 1000000000, 0, 0
+            count += 1
         return JsonResponse(chart, safe=False)
     except StockOverview.DoesNotExist:
         return JsonResponse({'error': 'Stock not found'}, status=404)
@@ -109,20 +112,24 @@ def candlestick_chart_data_intraday(request, symbol, period):
 def candlestick_chart_data_daily(request, symbol, period):
     try:
         stock = StockOverview.objects.get(symbol=symbol)
-        historical_data = HistoricalData.objects.filter(stock_id=stock.id).order_by('-date')
-        count, open, high, low, close, volume = 0, 0, 0, 0, 0, 0
+        historical_data = HistoricalData.objects.filter(stock_id=stock.id).order_by('date')
+        count, open, high, low, close, volume = 0, 0, 0, 1000000000, 0, 0
         chart = list()
         for i in historical_data:
+            if i.date.weekday() == 4:
+              count += 2
             if i.high > high:
                 high = i.high
             if i.low < low:
                 low =i.low
-            if close == 0:
-                close = i.close
-            if count == (period):
+            if open == 0:
                 open = i.open
-                list.append([i.date, high, low, open, close])
-                count, open, high, low, close, volume = 0, 0, 0, 0, 0, 0
+                date = i.date
+            if count >= (period):
+                close = i.close
+                toAppend = [date, high, low, open, close]
+                chart.append(toAppend)
+                count, open, high, low, close, volume = 0, 0, 0, 1000000000, 0, 0
             count += 1
         return JsonResponse(chart, safe=False)
     except StockOverview.DoesNotExist:
@@ -132,6 +139,15 @@ def line_chart_data_intraday(request, symbol):
     try:
         stock = StockOverview.objects.get(symbol=symbol)
         data = IntradayData.objects.filter(stock_id=stock.id).order_by('date')
+        data_json = serialize('json', data)
+        data_dict = json.loads(data_json)
+        return JsonResponse(data_dict, safe=False)
+    except StockOverview.DoesNotExist:
+        return JsonResponse({'error': 'Stock not found'}, status=404)
+def line_chart_data_daily(request, symbol):
+    try:
+        stock = StockOverview.objects.get(symbol=symbol)
+        data = HistoricalData.objects.filter(stock_id=stock.id).order_by('date')
         data_json = serialize('json', data)
         data_dict = json.loads(data_json)
         return JsonResponse(data_dict, safe=False)
