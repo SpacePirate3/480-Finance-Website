@@ -8,11 +8,10 @@ import './RealHome.css';
 
 const RealHome = () => (
   <div>
-    Hello
-      <Header />
-      <MarketSummary />
-      <Stocks />
-    </div>
+    <Header />
+    <MarketSummary />
+    <Stocks />
+  </div>
 );
 
 RealHome.propTypes = {};

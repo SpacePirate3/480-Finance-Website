@@ -1,5 +1,7 @@
+import React from "react";
 import Header from "../Header/Header";
 import DetailedGraph from "./Graph/DetailedGraph";
+import DetailComponents from "./StockInfo/StockInfo";
 import {
   BrowserRouter as Router,
   Link,
@@ -7,8 +9,6 @@ import {
   Routes,
   useParams,
 } from "react-router-dom";
-
-import React from "react";
 
 export default DetailedPage
 function DetailedPage() {
@@ -19,6 +19,7 @@ function DetailedPage() {
       <Header />
       <DetailedGraph
       symbol = {stockSymbol}/>
+      <DetailComponents/>
     </div>
   );
 }
