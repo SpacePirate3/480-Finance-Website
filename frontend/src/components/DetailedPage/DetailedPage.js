@@ -1,5 +1,7 @@
+import React from "react";
 import Header from "../Header/Header";
 import DetailedGraph from "./Graph/DetailedGraph";
+import DetailComponents from "./StockInfo/StockInfo";
 import {
   BrowserRouter as Router,
   Link,
@@ -8,16 +10,15 @@ import {
   useParams,
 } from "react-router-dom";
 
-import React from "react";
+const DetailedPage = () => (
+  <div>
+      <Header/>
+      <DetailComponents/>
+  </div>
+);
 
-export default DetailedPage
-function DetailedPage() {
+DetailedPage.propTypes = {};
 
-  const{stockSymbol} = useParams()
-  return (
-    <div>
-      Hello?? {stockSymbol}
-      <Header />
-    </div>
-  );
-}
+DetailedPage.defaultProps = {};
+
+export default DetailedPage;
