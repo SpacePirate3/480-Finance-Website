@@ -16,8 +16,9 @@ function DetailedPage() {
   const{stockSymbol} = useParams()
   return (
     <div>
-      Hello?? {stockSymbol}
       <Header />
+      <DetailedGraph
+      symbol = {stockSymbol}/>
     </div>
   );
 }

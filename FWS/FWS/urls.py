@@ -29,7 +29,9 @@ urlpatterns = [
     path('api/stock/intraday/latest/<str:symbol>/', views.latest_intraday_data, name='latest_intraday_data'),
     path('api/stock/list/', views.stock_list, name='stock_list'),
     path('api/stock/chart/candlestick/intraday/<str:symbol>/<int:period>/', views.candlestick_chart_data_intraday, name='chart_candlestick'),
-    path('api/stock/chart/line/intraday/<str:symbol>/', views.line_chart_data_intraday, name='line_chart_data'),
+    path('api/stock/chart/line/intraday/<str:symbol>/', views.line_chart_data_intraday, name='line_chart_data_intraday'),
+    path('api/stock/chart/line/historical/<str:symbol>/', views.line_chart_data_daily, name='line_chart_data_historical'),
+    path('api/stock/chart/candlestick/historical/<str:symbol>/<int:period>/', views.candlestick_chart_data_daily, name='chart_candlestick_daily')
     # ... add other URL patterns as needed ...
 ]
 

@@ -16,7 +16,7 @@ export const renderTableRow = (stock, index) => {
     }
 
     return (
-        <Link to={`./Details/${stock.symbol}`}>
+        <Link to={`./Details/${stock.symbol}`} style={{textDecoration: 'none', color:'black'}}>
         <div className="row" key={index}>
             <span>{stock.symbol || '—'}</span>
             <span>{stock.price || '—'}</span>

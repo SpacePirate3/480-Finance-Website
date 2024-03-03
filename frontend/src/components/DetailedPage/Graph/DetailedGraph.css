@@ -1,4 +1,4 @@
-.market-container {
+.graph-container {
     display: flex;
     color: #232A31;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -6,13 +6,23 @@
     background: #ffffff;
     border-radius: 20px;
     margin: 10px;
+    height:70vw
 }
-
+.graph-area {
+    width: 95%;
+    height: 80%;
+    margin-left: auto;
+    margin-right: auto;
+}
 .stock-chart {
-    height: 500px;
     background: #1e1e1e;
 }
-
+.ButtonSelectors {
+    width: 20%;
+}
+.TypeButtons {
+    clear:both;
+}
 .stock-chart.active {
     background: green;
 }
