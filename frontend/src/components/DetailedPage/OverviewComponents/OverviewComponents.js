@@ -1,10 +1,10 @@
 import axios from 'axios';
-import './DetailsUtility.css'
+import './OverviewComponents.css'
 
 // Render General Income Box
 export const renderGeneralIncome = (stock) => {
     const renderRow = (label, value) => (
-        <div className="row-details">
+        <div className="row-seperator">
             <span>{label}</span>
             <span>{value || '—'}</span>
         </div>
@@ -12,35 +12,35 @@ export const renderGeneralIncome = (stock) => {
 
     if (!stock) {
         return (
-            <div className="row-details empty-row">
-                <span>—</span>
+            <div className="block-container row-container-empty ">
+                <div className="row-seperator empty">
+                    <span>—</span>
+                    <span>—</span>
+                </div>
             </div>
         );
     }
 
     return (
-        <div className="income-section">
-            <h1>GENERAL INCOME</h1>
-            <div className="block-container">
-                <div className='split-table-container'>
-                    <div className='split-table' id='table1'>
-                        {renderRow('Market Cap', stock.market_capitalization)}
-                        {renderRow('Profit Margin', stock.profit_margin)}
-                        {renderRow('Return On Equity (ttm)', stock.return_on_equity_ttm)}
-                        {renderRow('Return On Assets (ttm)', stock.return_on_assets_ttm)}
-                        {renderRow('EV/EBITDA', stock.ev_to_ebitda)}
-                        {renderRow('Gross Profit (ttm)', stock.gross_profit_ttm)}
-                        {renderRow('Diluted EPSTTM', stock.diluted_eps_ttm)}
-                    </div>
-                    <div className='split-table' id='table2'>
-                        {renderRow('PE Ratio', stock.pe_ratio)}
-                        {renderRow('PEG Ratio', stock.peg_ratio)}
-                        {renderRow('EPS', stock.eps)}
-                        {renderRow('Trailing PE', stock.trailing_pe)}
-                        {renderRow('Forward PE', stock.forward_pe)}
-                        {renderRow('Quarterly Revenue', stock.quarterly_revenue_growth_yoy)}
-                        {renderRow('Quarterly Earnings', stock.quarterly_earnings_growth_yoy)}
-                    </div>
+        <div className="block-container">
+            <div className='split-table-container'>
+                <div className='split-table' id='table1'>
+                    {renderRow('Market Cap', stock.market_capitalization)}
+                    {renderRow('Profit Margin', stock.profit_margin)}
+                    {renderRow('Return On Equity (ttm)', stock.return_on_equity_ttm)}
+                    {renderRow('Return On Assets (ttm)', stock.return_on_assets_ttm)}
+                    {renderRow('EV/EBITDA', stock.ev_to_ebitda)}
+                    {renderRow('Gross Profit (ttm)', stock.gross_profit_ttm)}
+                    {renderRow('Diluted EPSTTM', stock.diluted_eps_ttm)}
+                </div>
+                <div className='split-table' id='table2'>
+                    {renderRow('PE Ratio', stock.pe_ratio)}
+                    {renderRow('PEG Ratio', stock.peg_ratio)}
+                    {renderRow('EPS', stock.eps)}
+                    {renderRow('Trailing PE', stock.trailing_pe)}
+                    {renderRow('Forward PE', stock.forward_pe)}
+                    {renderRow('Quarterly Revenue', stock.quarterly_revenue_growth_yoy)}
+                    {renderRow('Quarterly Earnings', stock.quarterly_earnings_growth_yoy)}
                 </div>
             </div>
         </div>
@@ -50,7 +50,7 @@ export const renderGeneralIncome = (stock) => {
 // Render About The Company Box
 export const renderAbout = (stock) => {
     const renderRow = (label, value) => (
-        <div className="company-details">
+        <div className="vertical-details">
             <div>{label}</div>
             <div>{value || '—'}</div>
         </div>
@@ -58,43 +58,43 @@ export const renderAbout = (stock) => {
 
     if (!stock) {
         return (
-            <div className="row-details empty-row">
-                <span>—</span>
+            <div className="block-container row-container-empty ">
+                <div className="row-seperator empty">
+                    <span>—</span>
+                    <span>—</span>
+                </div>
             </div>
         );
     }
 
     return (
-        <div className="about-section">
-            <h1>GENERAL {stock.name.toUpperCase()}</h1>
-            <div className="block-container">
-                <div className='split-table-container'>
-                    <div className='split-table' id='table1'>
-                        {renderRow('Sector', stock.sector)}
-                        {renderRow('CIK', stock.cik)}
-                    </div>
-                    <div className='split-table' id='table2'>
-                        {renderRow('Industry', stock.industry)}
-                        {renderRow('Headquarters', stock.address)}
-                    </div>
-                    <div className='split-table' id='table3'>
-                        {renderRow('Fiscal Year Ends', stock.fiscal_year_end)}
-                        {renderRow('Latest Quarter', stock.latest_quarter)}
-                    </div>
+        <div className="block-container">
+            <div className='split-table-container'>
+                <div className='split-table' id='table1'>
+                    {renderRow('Sector', stock.sector)}
+                    {renderRow('CIK', stock.cik)}
                 </div>
-                <div>
-                    <h3>COMPANY</h3>
-                    <div>{stock.description}</div>
+                <div className='split-table' id='table2'>
+                    {renderRow('Industry', stock.industry)}
+                    {renderRow('Headquarters', stock.address)}
                 </div>
+                <div className='split-table' id='table3'>
+                    {renderRow('Fiscal Year Ends', stock.fiscal_year_end)}
+                    {renderRow('Latest Quarter', stock.latest_quarter)}
+                </div>
+            </div>
+            <div>
+                <h3>COMPANY</h3>
+                <div>{stock.description}</div>
             </div>
         </div>
     );
 };
 
-// Render General Income Box
+// Render Share Statistics Box
 export const renderShareStatistics = (stock) => {
     const renderRow = (label, value) => (
-        <div className="row-details">
+        <div className="row-seperator">
             <span>{label}</span>
             <span>{value || '—'}</span>
         </div>
@@ -102,31 +102,31 @@ export const renderShareStatistics = (stock) => {
 
     if (!stock) {
         return (
-            <div className="row-details empty-row">
-                <span>—</span>
+            <div className="block-container row-container-empty ">
+                <div className="row-seperator empty">
+                    <span>—</span>
+                    <span>—</span>
+                </div>
             </div>
         );
     }
 
-    return (
-        <div className="share-statistics-section">
-            <h1>SHARE STATISTICS</h1>
-            <div className="block-container">
-                <div className='split-table-container'>
-                    <div className='split-table' id='table1'>
-                        {renderRow('Price To Book Ratio', stock.price_to_book_ratio)}
-                        {renderRow('Price To Sales Ratio', stock.price_to_sales_ratio_ttm)}
-                        {renderRow('Analyst Target Price', stock.analyst_target_price)}
-                        {renderRow('Beta', stock.beta)}
-                        {renderRow('Shares Outstanding', stock.shares_outstanding)}
-                    </div>
-                    <div className='split-table' id='table2'>
-                        {renderRow('52 Week High', stock.week_52_high)}
-                        {renderRow('52 Week Low', stock.week_52_low)}
-                        {renderRow('50 Day Moving Average', stock.day_50_moving_average)}
-                        {renderRow('200 Day Moving Average', stock.day_200_moving_average)}
-                        {renderRow('Book Value', stock.book_value)}
-                    </div>
+    return (  
+        <div className="block-container">
+            <div className='split-table-container'>
+                <div className='split-table' id='table1'>
+                    {renderRow('Price To Book Ratio', stock.price_to_book_ratio)}
+                    {renderRow('Price To Sales Ratio', stock.price_to_sales_ratio_ttm)}
+                    {renderRow('Analyst Target Price', stock.analyst_target_price)}
+                    {renderRow('Beta', stock.beta)}
+                    {renderRow('Shares Outstanding', stock.shares_outstanding)}
+                </div>
+                <div className='split-table' id='table2'>
+                    {renderRow('52 Week High', stock.week_52_high)}
+                    {renderRow('52 Week Low', stock.week_52_low)}
+                    {renderRow('50 Day Moving Average', stock.day_50_moving_average)}
+                    {renderRow('200 Day Moving Average', stock.day_200_moving_average)}
+                    {renderRow('Book Value', stock.book_value)}
                 </div>
             </div>
         </div>
@@ -136,7 +136,7 @@ export const renderShareStatistics = (stock) => {
 // Render General Dividends Box
 export const renderDividends = (stock) => {
     const renderRow = (label, value) => (
-        <div className="row-details">
+        <div className="row-seperator">
             <span>{label}</span>
             <span>{value || '—'}</span>
         </div>
@@ -144,23 +144,23 @@ export const renderDividends = (stock) => {
 
     if (!stock) {
         return (
-            <div className="row-details empty-row">
-                <span>—</span>
+            <div className="block-container row-container-empty ">
+                <div className="row-seperator empty">
+                    <span>—</span>
+                    <span>—</span>
+                </div>
             </div>
         );
     }
 
     return (
-        <div className="dividends-section">
-            <h1>DIVIDENDS</h1>
-            <div className="block-container">
-                <div className='split-table'>
-                    {renderRow('Dividend Per Share', stock.dividend_per_share)}
-                    {renderRow('Dividend Yield', stock.dividend_yield)}
-                    {renderRow('Payout Ratio', (stock.dividend_per_share / stock.eps * 100).toFixed(2) + ' %')}
-                    {renderRow('Dividend Date', stock.dividend_date)}
-                    {renderRow('Ex Dividend Date', stock.ex_dividend_date)}
-                </div>
+        <div className="block-container">
+            <div className='split-table'>
+                {renderRow('Dividend Per Share', stock.dividend_per_share)}
+                {renderRow('Dividend Yield', stock.dividend_yield)}
+                {renderRow('Payout Ratio', (stock.dividend_per_share / stock.eps * 100).toFixed(2) + ' %')}
+                {renderRow('Dividend Date', stock.dividend_date)}
+                {renderRow('Ex Dividend Date', stock.ex_dividend_date)}
             </div>
         </div>
     );
@@ -168,8 +168,15 @@ export const renderDividends = (stock) => {
 
 
 // Render Table
-export const renderTable = (data, renderRowFunc) => {
-    return Object.values(data).map((item, index) => renderRowFunc(item));
+export const renderComponent = (data, renderFunction) => {
+    const paddedData = [...data];
+
+    // Checks if object is Populated 
+    if (data.length < 1) {
+        paddedData.push(undefined); // Add `undefined` for missing Obj
+    }
+
+    return paddedData.map((item, index) => renderFunction(item));
 };
 
 // Gets all necessary data for the Details Page 
@@ -292,4 +299,12 @@ function formatPercentage(number) {
         throw new Error('Input must be a number');
     }
     return (number * 100).toFixed(2) + '%';
+}
+
+// Render Company Name
+export const renderCompanyName = (stock) => {
+    if (!stock) {
+        return "COMPANY";
+    }
+    return stock.name.toUpperCase();
 }

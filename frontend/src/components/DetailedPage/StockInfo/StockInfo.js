@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import '../DetailsUtility/DetailsUtility.css'
 import './StockInfo.css'
-import { renderTable, renderGeneralIncome, 
+import { renderComponent, renderGeneralIncome, 
         renderAbout, renderShareStatistics, 
-        renderDividends, renderShorts, 
-        fetchSpecificStock 
-} from '../DetailsUtility/DetailsUtility.js';
+        renderDividends, fetchSpecificStock,
+        renderCompanyName 
+} from '../OverviewComponents/OverviewComponents.js';
 import { useParams } from 'react-router-dom';
 
 function StockInfo() {
@@ -15,7 +14,7 @@ function StockInfo() {
     
     // Trigger to update page's components
     const fetchData = async () => {
-        const stockData = await fetchSpecificStock(apiBaseUrl, stockSymbol); // Gets General Income
+        const stockData = await fetchSpecificStock(apiBaseUrl, stockSymbol); // Gets Stock Info
         setStockIcome(stockData);
     };
 
@@ -28,20 +27,24 @@ function StockInfo() {
 
     // Structures Page's Components
     return (
-        
-        <div className="flex-container-details"> {}
-            <div className="flex-component"> {}
-                {renderTable(stock, renderGeneralIncome)}
+        <div className="flex-container-overview"> {}
+            <div className="flex-component-overview income-section"> {}
+                <h1>GENERAL INCOME</h1>
+                {renderComponent(stock, renderGeneralIncome)}
             </div>
-            <div className="flex-component"> {} 
-                {renderTable(stock, renderAbout)}
+            <div className="flex-component-overview about-section"> {}
+                <h1>ABOUT {renderComponent(stock, renderCompanyName)}</h1>
+                {renderComponent(stock, renderAbout)}
             </div>
-            <div className="flex-component"> {}    
-                {renderTable(stock, renderShareStatistics)}
+            <div className="flex-component-overview share-statistics-section"> {}    
+                <h1>SHARE STATISTICS</h1>
+                {renderComponent(stock, renderShareStatistics)}
             </div>
-            <div className="flex-component"> {}
-                {renderTable(stock, renderDividends)}
+            <div className="flex-component-overview dividends-section"> {}
+                <h1>DIVIDENDS</h1>
+                {renderComponent(stock, renderDividends)}
             </div>
+
         </div>
     );  
 }

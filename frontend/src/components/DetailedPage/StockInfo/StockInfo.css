@@ -1,0 +1,23 @@
+/*
+    Overview Container Style
+*/
+
+/* General Flex Container */
+.flex-container-overview {
+    display: flex;
+    flex-direction: column;
+    color: #232A31;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    align-items: stretch;
+}
+/* General Component*/
+.flex-component-overview {
+    flex: 1;
+    margin: 10px;
+    padding: 20px;
+    padding-left: 30px;
+    padding-right: 30px;
+    background: #ffffff;
+    border-radius: 20px;
+    font-size: larger;
+}
