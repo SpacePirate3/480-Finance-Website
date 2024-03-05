@@ -13,6 +13,14 @@ function MarketSummary() {
     const seriesRef = useRef([]);
     const specificSymbols = ['AMZN', 'GOOGL', 'AAPL', 'META', 'NFLX'];
     const colors = ['#FF9900', '#2BA24C', '#000000', '#1178F2', '#D91921'];
+    const [currentTime, setCurrentTime] = useState([]);
+
+    const updateTime = () => {
+        const now = new Date();
+        const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', timeZoneName: 'short' };
+        const formattedDateTime = now.toLocaleDateString('en-US', options) + ' ' + now.toLocaleTimeString('en-US');
+        setCurrentTime(formattedDateTime);
+    };
 
     const fetchData = async () => {
         const updatedIndexes = await fetchSpecificIndexes(apiBaseUrl, specificSymbols);
@@ -22,10 +30,15 @@ function MarketSummary() {
     useEffect(() => {
         fetchData();
         const interval = setInterval(fetchData, 60000);
+        const timeInterval = setInterval(updateTime, 1000);
+        updateTime(); // Initialize immediately
         if (!chartRef.current) {
             buildChart();
         }
-        return () => clearInterval(interval);
+        return () => {
+            clearInterval(interval);
+            clearInterval(timeInterval);
+        };
     }, []);
 
     const handleMouseEnter = (index) => {
@@ -106,7 +119,7 @@ function MarketSummary() {
         <div className="market-container">
             <div className="home-flex-table">
                 <h1>MARKET SUMMARY</h1>
-                <h2>{activeStock ? `${activeStock.symbol} | WED, FEB 7 2024 - 7:00 PM EST` : 'FAANG | WED, FEB 7 2024 - 7:00 PM EST'}</h2>
+                <h2>{activeStock ? `${activeStock.symbol} | ${currentTime}` : `FAANG | ${currentTime}`}</h2>
                 <div className="home-table">
                     <div className="home-table-header">
                         <span>SYMBOL</span>
