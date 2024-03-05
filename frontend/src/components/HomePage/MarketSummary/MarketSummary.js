@@ -13,7 +13,8 @@ function MarketSummary() {
     const seriesRef = useRef([]);
     const specificSymbols = ['AMZN', 'GOOGL', 'AAPL', 'META', 'NFLX'];
     const colors = ['#FF9900', '#2BA24C', '#000000', '#1178F2', '#D91921'];
-
+    let container
+    let chart
     const fetchData = async () => {
         const updatedIndexes = await fetchSpecificIndexes(apiBaseUrl, specificSymbols);
         setIndexes(updatedIndexes);
@@ -59,9 +60,9 @@ function MarketSummary() {
         const chartOptions = {
             layout: { textColor: 'black', background: { type: 'solid', color: 'white' } },
         };
-        const container = document.getElementsByClassName('stock-chart')[0];
+        container = document.getElementsByClassName('stock-chart')[0];
         if (!container || chartRef.current) return;
-        const chart = createChart(container, chartOptions);
+        chart = createChart(container, chartOptions);
         chartRef.current = chart;
         chart.timeScale().applyOptions({
             timeVisible: true,
@@ -89,7 +90,9 @@ function MarketSummary() {
             const zoomRange = { from: logicalRange.to - 30, to: logicalRange.to };
             chart.timeScale().setVisibleLogicalRange(zoomRange);
         }
+
     };
+
 
     const fetchDataForSeries = async (apiBaseUrl, symbol, series) => {
         const response = await axios.get(`${apiBaseUrl}/stock/chart/line/intraday/${symbol}/`);
