@@ -34,9 +34,8 @@
 .stock-logo {
     width: 80px;
     height: 80px;
-    border-radius: 50%;
-    background-color: #7090B0;
     margin-right: 20px;
+    object-fit: contain; 
 }
 
 .home-stock-info-wrapper {
