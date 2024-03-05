@@ -3,14 +3,13 @@ import './PopularStocks.css';
 import '../Utility.css'
 import { renderTableRow, renderTableRowsWithDataPadding, fetchAllStockData, formatVolume} from '../Utility';
 import { Link } from "react-router-dom";
-
+import {Logos} from './Logos.js'
 function PopularStocks() {
     const [stocks, setStocks] = useState([]);
     const [topMovers, setTopMovers] = useState([]);
     const [topGainers, setTopGainers] = useState([]);
     const [topLosers, setTopLosers] = useState([]);
     const apiBaseUrl = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000/api';
-
     const fetchData = async () => {
         const updatedStocks = await fetchAllStockData(apiBaseUrl);
         setStocks(updatedStocks);
@@ -61,8 +60,13 @@ function PopularStocks() {
         return (
             <Link to={`./Details/${stock.symbol}`} style={{textDecoration: 'none', color:'black'}}>
             <div key={index} className="stock-button-popular">
-                <div className="stock-logo"></div> {/* Consider adding an image here */}
+
+                <img src={Logos[`${stock.symbol}`]} alt={`${stock.symbol} Logo`} className="stock-logo"></img> {/* Consider adding an image here */}
                 <div className="home-stock-info-wrapper">
+
+                
+                
+
                     <div className="company-name">{name}</div>
                     <div className="stock-symbol">{symbol}</div>
                     <div className="stock-price">{stock.price} USD</div>
