@@ -100,6 +100,12 @@ def fetch_stock_data(symbol, fetch_type="historical", interval_min=1):
             data_key = f"Time Series ({interval_str})" if fetch_type == "intraday" else "Time Series (Daily)"
             stock_data = data.get(data_key, {})
 
+            if fetch_type == "intraday":
+                # Find the most current date from the data
+                most_current_date = max(stock_data.keys()).split(" ")[0]
+                # Filter stock_data to keep only entries for the most current date
+                stock_data = {date: values for date, values in stock_data.items() if date.startswith(most_current_date)}
+
             connection = db_connect()
             cursor = connection.cursor()
 
@@ -108,8 +114,6 @@ def fetch_stock_data(symbol, fetch_type="historical", interval_min=1):
             result = cursor.fetchone()
             if not result:
                 print(f"No ID found for symbol {symbol}. Ensure stock_overview is populated first.")
-                cursor.close()
-                connection.close()
                 return
 
             stock_id = result[0]
@@ -152,7 +156,7 @@ def fetch_stock_data(symbol, fetch_type="historical", interval_min=1):
             print(f"Failed to fetch {fetch_type} data for {symbol}")
 
     except Exception as e:
-        print(f"An error occured: {e}")
+        print(f"An error occurred: {e}")
     finally:
         if cursor:
             cursor.close()

@@ -11,7 +11,7 @@
     overflow: hidden; /* Add this to ensure no overflow */
 }
 
-.stock-chart {
+.home-stock-chart {
     flex-grow: 1; /* Allow the chart to fill the container */
     width: 100%; /* Fill the width of its parent */
     min-height: 500px; /* Or any minimum height you prefer */

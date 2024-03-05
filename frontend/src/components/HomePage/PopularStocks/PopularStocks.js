@@ -62,18 +62,18 @@ function PopularStocks() {
             <Link to={`./Details/${stock.symbol}`} style={{textDecoration: 'none', color:'black'}}>
             <div key={index} className="stock-button-popular">
                 <div className="stock-logo"></div> {/* Consider adding an image here */}
-                <div className="stock-info-wrapper">
+                <div className="home-stock-info-wrapper">
                     <div className="company-name">{name}</div>
                     <div className="stock-symbol">{symbol}</div>
                     <div className="stock-price">{stock.price} USD</div>
                     <div className="stock-volume">VOL {stock.volume ? formatVolume(stock.volume) : '—'}</div>
                 </div>
-                <div className="stock-change-group">
+                <div className="home-stock-change-group">
                     <div className={`stock-change ${changeClass}`}>
-                        {stock.change}
+                        {stock.change ? (stock.change > 0 ? `+${stock.change}` : stock.change) : '—'}
                     </div>
                     <div className={`percent-change ${percentChangeClass}`}>
-                        {stock.percentChange}%
+                        {stock.percentChange ? (stock.percentChange > 0 ? `+${stock.percentChange}%` : `${stock.percentChange}%`) : '—'}
                     </div>
                 </div>
             </div>
@@ -82,18 +82,18 @@ function PopularStocks() {
     };
 
     return (
-        <div className="flex-container"> {/* Use shared container class */}
-            <div className="flex-component"> {/* Use shared class for left section */}
+        <div className="home-flex-container"> {/* Use shared container class */}
+            <div className="home-flex-component"> {/* Use shared class for left section */}
                 <h1>POPULAR STOCKS</h1>
                 <div className="popular-stocks">
                     {stocks.map(renderStockButton)}
                 </div>
             </div>
-            <div className="flex-table"> {/* Use shared class for right section, adjusted for content */}
+            <div className="home-flex-table"> {/* Use shared class for right section, adjusted for content */}
                 <div className="top-movers-section">
                     <h1>TOP MOVERS</h1>
-                    <div className="table">
-                        <div className="table-header">
+                    <div className="home-table">
+                        <div className="home-table-header">
                             <span>SYMBOL</span>
                             <span>LAST (USD)</span>
                             <span>CHG (USD)</span>
@@ -104,8 +104,8 @@ function PopularStocks() {
                 </div>
                 <div className="top-gainers-section">
                     <h1>TOP GAINERS</h1>
-                    <div className="table">
-                        <div className="table-header">
+                    <div className="home-table">
+                        <div className="home-table-header">
                             <span>SYMBOL</span>
                             <span>LAST (USD)</span>
                             <span>CHG (USD)</span>
@@ -116,8 +116,8 @@ function PopularStocks() {
                 </div>
                 <div className="top-losers-section">
                     <h1>TOP LOSERS</h1>
-                    <div className="table">
-                        <div className="table-header">
+                    <div className="home-table">
+                        <div className="home-table-header">
                             <span>SYMBOL</span>
                             <span>LAST (USD)</span>
                             <span>CHG (USD)</span>

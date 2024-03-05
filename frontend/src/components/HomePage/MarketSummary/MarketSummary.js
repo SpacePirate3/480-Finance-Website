@@ -59,7 +59,7 @@ function MarketSummary() {
         const chartOptions = {
             layout: { textColor: 'black', background: { type: 'solid', color: 'white' } },
         };
-        const container = document.getElementsByClassName('stock-chart')[0];
+        const container = document.getElementsByClassName('home-stock-chart')[0];
         if (!container || chartRef.current) return;
         const chart = createChart(container, chartOptions);
         chartRef.current = chart;
@@ -104,11 +104,11 @@ function MarketSummary() {
 
     return (
         <div className="market-container">
-            <div className="flex-table">
+            <div className="home-flex-table">
                 <h1>MARKET SUMMARY</h1>
                 <h2>{activeStock ? `${activeStock.symbol} | WED, FEB 7 2024 - 7:00 PM EST` : 'FAANG | WED, FEB 7 2024 - 7:00 PM EST'}</h2>
-                <div className="table">
-                    <div className="table-header">
+                <div className="home-table">
+                    <div className="home-table-header">
                         <span>SYMBOL</span>
                         <span>LAST</span>
                         <span>CHG</span>
@@ -125,8 +125,8 @@ function MarketSummary() {
                     ))}
                 </div>
             </div>
-            <div className="flex-component">
-                <div className={`stock-chart ${activeStock ? 'active' : ''}`}>
+            <div className="home-flex-component">
+                <div className={`home-stock-chart ${activeStock ? 'active' : ''}`}>
                 </div>
             </div>
         </div>
