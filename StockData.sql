@@ -87,19 +87,3 @@ CREATE TABLE historical_data (
     FOREIGN KEY (ID) REFERENCES stock_overview(ID),
     PRIMARY KEY (ID, date)
 );
-INSERT INTO stock_overview (name, symbol) VALUES ("Meta Platforms Inc.", "META"),
-("Amazon", "AMZN"),
-("Apple", "AAPL"),
-("Netflix","NFLX"),
-("Google","GOOGL"),
-("Dell","DELL"),
-("Intel","INTC"),
-("Microsoft","MSFT"),
-("NVIDIA","NVDA"),
-("International Business Machines","IBM"),
-("Advanced Micro Devices Inc", "AMD"),
-("HP Inc", "HPQ"),
-("Tesla", "TSLA"),
-("T-Mobile", "TMUS"),
-("Verizon", "VZ")
-;

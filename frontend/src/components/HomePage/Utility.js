@@ -6,7 +6,7 @@ export const renderTableRow = (stock, index) => {
     // Check if stock data is provided
     if (!stock) {
         return (
-            <div className="row empty-row" key={index}>
+            <div className="home-row empty-row" key={index}>
                 <span>—</span>
                 <span>—</span>
                 <span>—</span>
@@ -17,14 +17,14 @@ export const renderTableRow = (stock, index) => {
 
     return (
         <Link to={`./Details/${stock.symbol}`} style={{textDecoration: 'none', color:'black'}}>
-        <div className="row" key={index}>
+        <div className="home-row" key={index}>
             <span>{stock.symbol || '—'}</span>
             <span>{stock.price || '—'}</span>
             <span className={stock.change > 0 ? 'stock-change-positive' : 'stock-change-negative'}>
                 {stock.change ? (stock.change > 0 ? `+${stock.change}` : stock.change) : '—'}
             </span>
             <span className={stock.percentChange > 0 ? 'stock-change-positive' : 'stock-change-negative'}>
-                {stock.percentChange ? `${stock.percentChange}%` : '—'}
+                {stock.percentChange ? (stock.percentChange > 0 ? `+${stock.percentChange}%` : `${stock.percentChange}%`) : '—'}
             </span>
         </div>
         </Link>
