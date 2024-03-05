@@ -60,13 +60,8 @@ function PopularStocks() {
         return (
             <Link to={`./Details/${stock.symbol}`} style={{textDecoration: 'none', color:'black'}}>
             <div key={index} className="stock-button-popular">
-
-                <img src={Logos[`${stock.symbol}`]} alt={`${stock.symbol} Logo`} className="stock-logo"></img> {/* Consider adding an image here */}
+                <img src={Logos[`${stock.symbol}`]} alt={`${stock.symbol} Logo`} className="stock-logo"></img>
                 <div className="home-stock-info-wrapper">
-
-                
-                
-
                     <div className="company-name">{name}</div>
                     <div className="stock-symbol">{symbol}</div>
                     <div className="stock-price">{stock.price} USD</div>
