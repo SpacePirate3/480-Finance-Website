@@ -15,7 +15,9 @@
     margin-right: auto;
 }
 .stock-chart {
-    background: #1e1e1e;
+    flex-grow: 1; /* Allow the chart to fill the container */
+    width: 100%; /* Fill the width of its parent */
+    min-height: 500px; /* Or any minimum height you prefer */
 }
 .ButtonSelectors {
     height: 100%
@@ -44,7 +46,7 @@
 .HistoricalPeriods > button {
     margin: 10px;
     height: 60px;
-    width: 25%;
+    width: 24%;
     background-color: #232A31;
     color: #82D781;
 }

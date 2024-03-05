@@ -118,7 +118,6 @@ function DetailedGraph({symbol = 'AMZN'}) {
                     <h2 id ="header"></h2>
                     <h3 id="date"></h3>
                     <div className="stock-chart">
-                        {stock ? stock.name : 'Graph Placeholder'}
                     </div>
                 </div>
                 <section className="ButtonSelectors">
