@@ -23,6 +23,43 @@
     color: #FFFFFF;
 }
 
+.backgroundRectangle {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 10vh;
+    background: #232A31;
+    padding-left: 1em;
+    padding-right: 1em;
+    z-index: 1000; /* Ensure the header stays above other content */
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+.textGlance,
+.textFinance,
+.buttons {
+    font-family: 'Inter', sans-serif;
+    font-weight: 800;
+    font-size: 30px;
+    line-height: 30px;
+    color: #FFFFFF;
+
+}
+.logoLink {
+    text-decoration: none;
+}
+.buttons > * {
+    text-decoration: none;
+}
+
 .graphic {
     display: flex;
     margin-right: 10px;
@@ -35,11 +72,19 @@
     margin-right: 5px;
 }
 
-.rectangle1 { height: 25px; }
-.rectangle2 { height: 50px; }
-.rectangle3 { height: 75px; }
+.rectangle1 {
+    height: 25px;
+}
 
-.hamburger {
+.rectangle2 {
+    height: 50px;
+}
+
+.rectangle3 {
+    height: 75px;
+}
+
+.stock-line-menu {
     display: block;
     width: 70px;
     height: 5px;
@@ -49,18 +94,13 @@
     transition: all 0.3s ease-in-out;
 }
 
-.hamburger-menu {
+.stock-container-menu {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     padding: 10px;
     cursor: pointer;
-}
-
-/* Apply hover effect to the whole .hamburger-menu to light up all lines */
-.hamburger-menu:hover .hamburger {
-    background-color: #82D781; /* Change all lines to green when hovering over the menu */
 }
 
 .buttons {
@@ -73,8 +113,11 @@
     cursor: pointer;
 }
 
-.homeButton { margin-right: 70px; }
-.homeButton { color: #FFFFFF; }
+.homeButton {
+    margin-right: 70px;
+    color: #FFFFFF;
+}
+
 .homeButton:hover {
     position: relative;
 }
@@ -88,5 +131,10 @@
     height: 5px;
     background-color: #82D781;
     border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.stock-line-menu:hover {
+    background-color: #82D781;
     transition: background-color 0.3s;
 }

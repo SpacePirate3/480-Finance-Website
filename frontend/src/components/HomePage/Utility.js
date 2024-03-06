@@ -31,8 +31,8 @@ export const renderTableRow = (stock, index) => {
     );
 };
 
-export const renderTableRowsWithDataPadding = (data, renderRowFunc) => {
-    const rowsToRender = 6;
+export const renderTableRowsWithDataPadding = (data, renderRowFunc, rows) => {
+    const rowsToRender = rows;
     const paddedData = [...data];
 
     // Pad the array with `undefined` to ensure it has 6 items

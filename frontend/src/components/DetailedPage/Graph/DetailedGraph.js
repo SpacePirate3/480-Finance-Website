@@ -120,30 +120,35 @@ function DetailedGraph({symbol = 'AMZN'}) {
                     <div className="stock-chart">
                     </div>
                 </div>
-                <section className="ButtonSelectors">
-                    <h3>Graph Type</h3>
+                <div className="ButtonSelectors">
+                    <div className="ButtonHeaders">
+                        <h3>Graph Type</h3>
+                        <h3>Time Frame</h3>
+                        <h3>Intraday Periods</h3>
+                        <h3>Daily Periods</h3>
+                    </div>
+                    <div className="Buttons">
                     <div className="TypeButtons">
                         <button onClick={() => buildChart("line", null, currentVersion)}>Line Graph</button>
-                        <button onClick={() => buildChart("candlestick", currentPeriod, currentVersion)}>Candlestick</button>
+                        <button onClick={() => buildChart("candlestick", currentPeriod, currentVersion)}>Candlestick
+                        </button>
                     </div>
-                    <h3>Time Frame</h3>
                     <div className="TimeButtons">
                         <button onClick={() => buildChart(currentType, "1", "intraday")}>Intraday</button>
                         <button onClick={() => buildChart(currentType, "1", "historical")}>Daily</button>
                     </div>
-                    <h3>Intraday Candlestick Periods</h3>
                     <div className="IntradayPeriods">
                         <button onClick={() => buildChart(currentType, "1", "intraday")}>Minute</button>
                         <button onClick={() => buildChart(currentType, "60", "intraday")}>1 Hour</button>
                         <button onClick={() => buildChart(currentType, "360", "intraday")}>6 Hour</button>
                     </div>
-                    <h3>Daily Candlestick Periods</h3>
                     <div className="HistoricalPeriods">
                         <button onClick={() => buildChart(currentType, "1", "historical")}>Day</button>
                         <button onClick={() => buildChart(currentType, "7", "historical")}>Week</button>
                         <button onClick={() => buildChart(currentType, "30", "historical")}>Month</button>
                     </div>
-                </section>
+                    </div>
+                </div>
 
             </div>);
 }
