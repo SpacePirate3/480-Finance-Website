@@ -1,0 +1,89 @@
+.dropdown-menu {
+    position: fixed;
+    top: 120px; /* Adjust the top position to leave space for the menu button */
+    right: 25px; /* Adjust the right position as needed */
+    width: 300px; /* Set a fixed width for the dropdown menu */
+    background-color: #232A31;
+    z-index: 2; /* Ensure the menu is above other content */
+    border-radius: 16px; /* Add border radius for rounded corners */
+    padding: 29px; /* Add padding for better appearance */
+    display: flex;
+    flex-direction: column;
+
+    max-height: 800px; /* Set a maximum height for the menu section */
+    overflow-y: auto; /* Enable vertical scrolling if content overflows */
+
+
+}
+
+
+.menu-section h3 {
+    margin: 0; /* Reset margin */
+    margin-bottom: 10px;
+    color: white; /* Set text color to white */
+}
+
+.menu-section-header {
+    display: flex;
+    align-items: center; /* Align items vertically */
+    cursor: pointer; /* Add cursor pointer for indicating clickable element */
+}
+
+.menu-section-header h3 {
+    margin: 0; /* Reset margin */
+    color: white; /* Set text color to white */
+}
+
+.arrow-icon {
+    margin-left: 5px; /* Adjust margin to create space between text and icon */
+    color: white; /* Set icon color to white */
+}
+
+
+.menu-section{
+
+    margin-bottom: 20px;
+}
+
+
+/*
+    Table styles
+*/
+
+.table-menu-header, .row-menu {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr; /* Four equal columns */
+    align-items: center;
+    padding: 12px 20px;
+    background-color: #FFFFFF;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+    font-family: 'Arial', sans-serif;
+    gap: 10px;
+    margin: 8px 0;
+}
+
+.table-menu-header {
+    font-weight: bold;
+    background-color: #FFFFFF;
+    box-shadow: none;
+}
+
+.row-menu:hover {
+    background-color: #b9f7fc;
+    box-shadow: 0 6px 12px 0 rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+}
+
+/*
+    Data Visualization Styles
+*/
+
+.stock-change-positive {
+    color: #4CAF50;
+}
+
+.stock-change-negative {
+    color: #F44336;
+}
