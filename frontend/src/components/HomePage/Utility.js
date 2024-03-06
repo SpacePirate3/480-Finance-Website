@@ -31,7 +31,7 @@ export const renderTableRow = (stock, index) => {
     );
 };
 
-export const renderTableRowsWithDataPadding = (data, renderRowFunc, rows) => {
+export const renderTableRowsWithDataPadding = (data, renderRowFunc, rows=6) => {
     const rowsToRender = rows;
     const paddedData = [...data];
 
