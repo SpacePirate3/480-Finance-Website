@@ -33,7 +33,7 @@
 }
 .buttons > * {
     text-decoration: none;
-    padding: 20px;
+    margin-right: 20px;
 }
 
 .graphic {
