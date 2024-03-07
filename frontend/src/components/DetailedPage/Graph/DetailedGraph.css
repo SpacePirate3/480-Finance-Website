@@ -1,5 +1,3 @@
-
-
 /* 
     Overall Graph Container
 */
@@ -26,13 +24,6 @@
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     background: #ffffff;
     border-radius: 20px;
-    margin: 110px 10px 10px  10px;
-}
-
-.graph-container h1 {
-    margin: 0; /* Remove default margins */
-    padding: 0; /* Remove default padding */
-    line-height: 2; /* Adjust line height to control spacing */
 }
 
 /* About container */
@@ -40,10 +31,6 @@
     display: flex;
     flex-direction: column; /* Display items in a column */
     color: #232A31;
-}
-.flex-component-about h1 {
-    font-size: xx-large;
-    line-height: 2; /* Adjust line height to control spacing */
 }
 
 
