@@ -4,8 +4,6 @@ from dotenv import load_dotenv
 import os
 import requests
 import mysql.connector
-import time
-import FWS.FWS.stock_data_pull as stock_data_pull
 
 # Load environment variables from .env file
 load_dotenv()

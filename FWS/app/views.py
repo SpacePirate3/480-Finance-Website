@@ -1,11 +1,8 @@
-from datetime import datetime
 import json
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse
 from .models import StockOverview, HistoricalData, IntradayData
 from django.core.serializers import serialize
-from django.urls import path
-from . import views
-from FWS import stock_data_pull
+
 
 def stock_overview(request, symbol):
     try:

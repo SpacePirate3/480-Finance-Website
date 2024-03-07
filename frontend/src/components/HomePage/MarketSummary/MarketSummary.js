@@ -118,13 +118,22 @@ function MarketSummary() {
     const fetchDataForSeries = async (apiBaseUrl, symbol, series) => {
         const response = await axios.get(`${apiBaseUrl}/stock/chart/line/intraday/${symbol}/`);
         const data = response.data.map(item => item.fields);
-        const chartData = data.map(datapoint => {
-            const datetime = Date.parse(datapoint.date) / 1000;
-            const change = parseFloat(datapoint.open) - parseFloat(datapoint.close);
-            return { time: datetime, value: change };
-        });
-        series.setData(chartData);
+        series.setData(lineChartSummary(data, series))
+
     };
+    const lineChartSummary = (data, series) => {
+            var datetime = ""
+            var values = [];
+            for (const datapoint of data) {
+                datetime = datetime.concat(datapoint.date.substring(0, 10), ' ', datapoint.date.substring(11, 19));
+                var time = Date.parse(datetime) / 1000;
+                var price = parseFloat(datapoint.open) - parseFloat(datapoint.close);
+                values.push({time:time, value:price});
+                datetime = "";
+            }
+            return values;
+    }
+
 
     return (
         <div className="market-container">

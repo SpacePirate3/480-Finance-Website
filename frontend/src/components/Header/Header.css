@@ -1,4 +1,29 @@
 .backgroundRectangle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 10vh;
+    background: #232A31;
+    padding-left: 1em;
+    padding-right: 1em;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.textGlance, .textFinance, .buttons {
+    font-family: 'Inter', sans-serif;
+    font-weight: 800;
+    font-size: 30px;
+    line-height: 30px;
+    color: #FFFFFF;
+}
+
+.backgroundRectangle {
     position: fixed;
     top: 0;
     left: 0;
