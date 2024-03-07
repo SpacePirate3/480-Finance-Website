@@ -12,13 +12,12 @@ function DetailedGraph({symbol = 'AMZN'}) {
     const apiBaseUrl = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000/api'
     const [about_data, setStockIcome] = useState([]);
     var stock = null
-    var chart = null
-    var series = null
     var currentPeriod
     var currentType
     var currentVersion
     const chartRef = useRef(null); 
-
+    var chart = useRef(null);
+    var series = useRef(null);
     useEffect(() => {
         // Fetches Data for Company
         fetchCompanyData();
@@ -38,8 +37,7 @@ function DetailedGraph({symbol = 'AMZN'}) {
         };
         
         if (chartRef.current) {
-            chart = createChart(chartRef.current, chartOptions);
-            console.log("Reaches my chart", chart.length);
+            chart.current = createChart(chartRef.current, chartOptions);
             buildChart();
             initializeOverview();
         }
@@ -63,16 +61,15 @@ function DetailedGraph({symbol = 'AMZN'}) {
     // (I think there is a better way of doing this) 
     const handleResize = () => {
         if (chart) {
-            chart.resize(document.getElementsByClassName("stock-chart")[0].clientWidth, document.getElementsByClassName("stock-chart")[0].clientHeight);
+           chart.current.resize(document.getElementsByClassName("stock-chart")[0].clientWidth, document.getElementsByClassName("stock-chart")[0].clientHeight);
         }
     };
 
     
     const buildChart = async ( type="line", period= null, version="historical" ) => {
-
         // If a Current Chart exist, it is removed
-        if (series !== null) {
-            chart.removeSeries(series);
+        if (series.current !== null) {
+            chart.current.removeSeries(series.current);
         }
 
         currentPeriod = period
@@ -82,13 +79,12 @@ function DetailedGraph({symbol = 'AMZN'}) {
             currentVersion = "intraday"
             
             if (type === "line") {
-                
                 currentType = "line"
                 
                 var response = await axios.get(`${apiBaseUrl}/stock/chart/line/intraday/${symbol}/`)
                 var data = response.data.map(item => item.fields)
                 lineChart(data)
-                chart.timeScale().applyOptions({
+               chart.current.timeScale().applyOptions({
                     timeVisible: true,
                     secondsVisible: true,
                 });
@@ -99,7 +95,7 @@ function DetailedGraph({symbol = 'AMZN'}) {
                 }
                 var response = await axios.get(`${apiBaseUrl}/stock/chart/candlestick/intraday/${symbol}/${period}/`)
                 candlestickChart(response.data, period)
-                chart.timeScale().applyOptions({
+               chart.current.timeScale().applyOptions({
                     timeVisible: true,
                     secondsVisible: true,
                 });
@@ -111,7 +107,7 @@ function DetailedGraph({symbol = 'AMZN'}) {
                 var response = await axios.get(`${apiBaseUrl}/stock/chart/line/historical/${symbol}/`)
                 var data = response.data.map(item => item.fields)
                 lineChart(data)
-                chart.timeScale().applyOptions({
+               chart.current.timeScale().applyOptions({
                     timeVisible: false,
                     secondsVisible: false,
                 });
@@ -122,35 +118,35 @@ function DetailedGraph({symbol = 'AMZN'}) {
                 }
                 var response = await axios.get(`${apiBaseUrl}/stock/chart/candlestick/historical/${symbol}/${period}/`)
                 candlestickChart(response.data, period)
-                chart.timeScale().applyOptions({
+               chart.current.timeScale().applyOptions({
                     timeVisible: false,
                     secondsVisible: false,
                 });
             }
         }
-        chart.timeScale().fitContent()
-        var scale = chart.timeScale().getVisibleLogicalRange()
-        chart.timeScale().setVisibleLogicalRange({from: scale.to - 30, to: scale.to})
+       chart.current.timeScale().fitContent()
+        var scale =chart.current.timeScale().getVisibleLogicalRange()
+       chart.current.timeScale().setVisibleLogicalRange({from: scale.to - 30, to: scale.to})
     };
 
     const lineChart = (data) => {
-        series = chart.addLineSeries()
+        series.current =chart.current.addLineSeries()
         var datetime = ""
         for (const datapoint of data) {
             datetime = datetime.concat(datapoint.date.substring(0, 10), ' ', datapoint.date.substring(11, 19))
             var time = Date.parse(datetime) / 1000
             var price = parseFloat(datapoint.close)
-            series.update({time:time, value:price})
+            series.current.update({time:time, value:price})
             datetime = ""
         }
     };
 
     const candlestickChart = (data, period) => {
-        series = chart.addCandlestickSeries()
+        series.current =chart.current.addCandlestickSeries()
         var datetime = ""
         for (const datapoint of data) {
             var time = Date.parse(datapoint[0]) / 1000
-            series.update({time:time, high:parseFloat(datapoint[1]), low:parseFloat(datapoint[2]), open:parseFloat(datapoint[3]), close:parseFloat(datapoint[4])})
+            series.current.update({time:time, high:parseFloat(datapoint[1]), low:parseFloat(datapoint[2]), open:parseFloat(datapoint[3]), close:parseFloat(datapoint[4])})
             datetime = ""
         }
     };
