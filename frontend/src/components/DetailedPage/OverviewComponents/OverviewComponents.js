@@ -286,7 +286,7 @@ function formatPrice(marketCap) {
       suffixIndex++;
     }
   
-    return marketCap.toFixed(1) + ' ' + suffixes[suffixIndex];
+    return marketCap.toFixed(1) + suffixes[suffixIndex];
 }
 
 // Format to Percentage

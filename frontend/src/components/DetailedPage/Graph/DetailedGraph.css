@@ -1,19 +1,25 @@
+
+
 /* 
     Overall Graph Container
 */
+/* General Graph container (for Graph & About Section) */
+.general-graph-component {
+    margin: 110px 10px 10px  10px;
+    overflow: hidden; /* Add this to ensure no overflow */
+}
 /* Drid layout */
 .grid-container-graph {
     padding: 20px;
     display: grid; /* Use grid layout */
     grid-template-columns: 2fr 1fr; /* Two columns with 2/3 width and 1/3 width */
-    gap: 20px; /* Gap between columns */
-    margin: 80px 10px 10px 10px;
-    height:820px;
+    gap: 10px; /* Gap between columns */
+    grid-gap: 20px;
 }
 /* Graph container */
 .graph-container {
-    margin: 10px;
-    padding: 10px 20px 10px 20px;
+    
+    padding: 10px 10px 10px 20px;
     display: flex;
     flex-direction: column; /* Display items in a column */
     color: #232A31;
@@ -50,8 +56,8 @@
 */
 .stock-chart {
     margin: 5px 10px 0px 10px;
-    width: 59vw;
-    height: 30vw;
+    width: 56vw;
+    height: 29vw;
 }
 
 
