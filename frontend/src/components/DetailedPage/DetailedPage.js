@@ -17,8 +17,7 @@ function DetailedPage() {
   return (
     <div className="DetailedPage">
       <Header/>
-      <DetailedGraph
-      symbol = {stockSymbol}/>
+      <DetailedGraph symbol = {stockSymbol}/>
       <StockInfo/>
     </div>
   );
