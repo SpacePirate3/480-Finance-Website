@@ -7,10 +7,11 @@ import { renderComponent, renderGeneralIncome,
 } from '../OverviewComponents/OverviewComponents.js';
 import { useParams } from 'react-router-dom';
 
+// Function Renders all Stock components
 function StockInfo() {
     const [stock, setStockIcome] = useState([]);
     const apiBaseUrl = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000/api';
-    let { stockSymbol } = useParams();
+    const { stockSymbol } = useParams();
     
     // Trigger to update page's components
     const fetchData = async () => {
@@ -27,20 +28,16 @@ function StockInfo() {
 
     // Structures Page's Components
     return (
-        <div className="flex-container-overview"> {}
-            <div className="flex-component-overview income-section"> {}
+        <div className="grid-container-overview"> {}
+            <div className="component-overview income-section"> {}
                 <h1>GENERAL INCOME</h1>
                 {renderComponent(stock, renderGeneralIncome)}
             </div>
-            <div className="flex-component-overview about-section"> {}
-                <h1>ABOUT {renderComponent(stock, renderCompanyName)}</h1>
-                {renderComponent(stock, renderAbout)}
-            </div>
-            <div className="flex-component-overview share-statistics-section"> {}    
+            <div className="component-overview share-statistics-section"> {}    
                 <h1>SHARE STATISTICS</h1>
                 {renderComponent(stock, renderShareStatistics)}
             </div>
-            <div className="flex-component-overview dividends-section"> {}
+            <div className="component-overview dividends-section"> {}
                 <h1>DIVIDENDS</h1>
                 {renderComponent(stock, renderDividends)}
             </div>

@@ -68,14 +68,14 @@
 }
 
 .rectangle {
-    width: 25px;
+    width: 20px;
     background: #82D781;
     margin-right: 5px;
 }
 
-.rectangle1 { height: 25px; }
-.rectangle2 { height: 50px; }
-.rectangle3 { height: 75px; }
+.rectangle1 { height: 20px; }
+.rectangle2 { height: 40px; }
+.rectangle3 { height: 60px; }
 
 .stock-line-menu {
     display: block;

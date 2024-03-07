@@ -34,15 +34,32 @@ function MarketSummary() {
 
     useEffect(() => {
         fetchData();
+
         const interval = setInterval(fetchData, 60000);
         const timeInterval = setInterval(updateTime, 1000);
+
         updateTime(); // Initialize immediately
+
+        const handleResize = () => {
+            if (chartRef.current) {
+                const container = document.getElementsByClassName('home-stock-chart')[0];
+                const width = container.clientWidth;
+                const height = container.clientHeight;
+                chartRef.current.resize(width, height);
+            }
+        };
+
+        window.addEventListener('resize', handleResize);
+        handleResize();
+
         if (!chartRef.current) {
             buildChart();
         }
+
         return () => {
             clearInterval(interval);
             clearInterval(timeInterval);
+            window.removeEventListener('resize', handleResize);
         };
     }, []);
 
