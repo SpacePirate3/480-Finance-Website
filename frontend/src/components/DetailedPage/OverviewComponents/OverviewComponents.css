@@ -6,20 +6,6 @@
 }
 
 /*
-    Vertical - Split Box Style
-*/
-.vertical-details {
-    display: grid;
-    grid-template-rows: 1fr 1fr;
-    align-items: center;
-    justify-items: start;
-    height: 90px;
-}
-.vertical-details + .vertical-details {
-    border-top: 1px solid #e0e0e0; /* Add a border line between rows */
-}
-
-/*
     Row Seperator Style
 */
 .row-seperator {
@@ -64,4 +50,7 @@
 }
 .split-table:nth-child(2) {
     margin-left: 10px;
+}
+.description {
+    margin-top: 20px;
 }

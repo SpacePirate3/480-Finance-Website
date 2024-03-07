@@ -1,55 +1,99 @@
+/* 
+    Overall Graph Container
+*/
+/* Drid layout */
+.grid-container-graph {
+    padding: 20px;
+    display: grid; /* Use grid layout */
+    grid-template-columns: 2fr 1fr; /* Two columns with 2/3 width and 1/3 width */
+    gap: 20px; /* Gap between columns */
+}
+/* Graph container */
 .graph-container {
+    margin: 10px;
+    padding: 10px 20px 10px 20px;
     display: flex;
+    flex-direction: column; /* Display items in a column */
     color: #232A31;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    align-items: flex-start;
     background: #ffffff;
     border-radius: 20px;
-    margin: 10px;
-    height:40vw;
 }
-.graph-area {
-    width: 95%;
-    height: 80%;
-    margin-left: auto;
-    margin-right: auto;
+/* About container */
+.flex-component-about {
+    display: flex;
+    flex-direction: column; /* Display items in a column */
+    color: #232A31;
 }
+
+
+/* 
+    Graph Title
+*/
+.graph-title {
+    display: flex;
+    flex-direction: column;
+}
+.graph-title h1 {
+    margin-bottom: 0px;
+}
+.graph-title h2 {
+    margin-top: 7px;
+}
+
+
+/* 
+    Chart Size
+*/
 .stock-chart {
-    flex-grow: 1; /* Allow the chart to fill the container */
-    width: 100%; /* Fill the width of its parent */
-    min-height: 500px; /* Or any minimum height you prefer */
+    margin: 5px 10px 0px 10px;
+    width: 59vw;
+    height: 30vw;
 }
+
+
+/* 
+    Flex Container for Buttons
+*/
 .ButtonSelectors {
-    height: 100%
+    margin: 20px 10px 10px 0px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
 }
-.TypeButtons > button {
-    margin: 10px;
-    height: 60px;
-    width: 40%;
-    background-color: #232A31;
-    color: #82D781;
+
+/* 
+    Button Style 
+*/
+.ButtonSelectors > button {
+    margin: 5px;
+    padding: 6px 20px 6px 20px;
+    border: 2px solid #e9e8e8;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    color: #232A31;
+    cursor: pointer;
 }
-.TimeButtons > button {
-    margin: 10px;
-    height: 60px;
-    width: 40%;
-    background-color: #232A31;
-    color: #82D781;
+
+/* 
+    Formatting Split buttons underneath the graph
+ */
+.split-container-button {
+    margin: 20px 0px 20px 5px;
+    display: flex;
 }
-.IntradayPeriods > button {
-    margin: 10px;
-    height: 60px;
-    width: 24%;
-    background-color: #232A31;
-    color: #82D781;
+.split-buttons-box {
+    padding: 0px;
+    display: inline-flex;
+    flex: 1;
 }
-.HistoricalPeriods > button {
-    margin: 10px;
-    height: 60px;
-    width: 24%;
-    background-color: #232A31;
-    color: #82D781;
+.split-buttons-box:nth-child(2) {
+    padding: 0px;
+    justify-content: flex-end;
+    margin-left: 10px;
 }
+
+
 .stock-chart.active {
     background: green;
 }

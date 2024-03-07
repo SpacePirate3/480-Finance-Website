@@ -3,17 +3,19 @@ import './OverviewComponents.css'
 
 // Render General Income Box
 export const renderGeneralIncome = (stock) => {
+    // Renders row for table
     const renderRow = (label, value) => (
         <div className="row-seperator">
             <span>{label}</span>
             <span>{value || '—'}</span>
         </div>
     );
-
+    
+    // Return Container for Unloaded Items
     if (!stock) {
         return (
             <div className="block-container row-container-empty ">
-                <div className="row-seperator empty">
+                <div className="row-seperator">
                     <span>—</span>
                     <span>—</span>
                 </div>
@@ -21,6 +23,7 @@ export const renderGeneralIncome = (stock) => {
         );
     }
 
+    // Return Container for Income Section
     return (
         <div className="block-container">
             <div className='split-table-container'>
@@ -47,19 +50,22 @@ export const renderGeneralIncome = (stock) => {
     );
 };
 
+
 // Render About The Company Box
 export const renderAbout = (stock) => {
+    // Renders row for table
     const renderRow = (label, value) => (
-        <div className="vertical-details">
+        <div className="row-seperator">
             <div>{label}</div>
             <div>{value || '—'}</div>
         </div>
     );
-
+    
+    // Return Container for Unloaded Items
     if (!stock) {
         return (
-            <div className="block-container row-container-empty ">
-                <div className="row-seperator empty">
+            <div className="row-seperator row-container-empty">
+                <div className="row-seperator">
                     <span>—</span>
                     <span>—</span>
                 </div>
@@ -67,32 +73,27 @@ export const renderAbout = (stock) => {
         );
     }
 
+    // Return Container for About Section
     return (
-        <div className="block-container">
-            <div className='split-table-container'>
-                <div className='split-table' id='table1'>
-                    {renderRow('Sector', stock.sector)}
-                    {renderRow('CIK', stock.cik)}
-                </div>
-                <div className='split-table' id='table2'>
-                    {renderRow('Industry', stock.industry)}
-                    {renderRow('Headquarters', stock.address)}
-                </div>
-                <div className='split-table' id='table3'>
-                    {renderRow('Fiscal Year Ends', stock.fiscal_year_end)}
-                    {renderRow('Latest Quarter', stock.latest_quarter)}
-                </div>
-            </div>
-            <div>
-                <h3>COMPANY</h3>
-                <div>{stock.description}</div>
+        <div className="block-seperator"> 
+            <div className=''>{stock.description}</div>
+            <div className='split-table description'>
+                {renderRow('Sector', stock.sector)}
+                {renderRow('CIK', stock.cik)}        
+                {renderRow('Industry', stock.industry)}
+                {renderRow('Headquarters', stock.address)}
+                {renderRow('Primary Exchange', stock.exchange)}
+                {renderRow('Fiscal Year Ends', stock.fiscal_year_end)}
+                {renderRow('Latest Quarter', stock.latest_quarter)}
             </div>
         </div>
     );
 };
 
+
 // Render Share Statistics Box
 export const renderShareStatistics = (stock) => {
+    // Renders row for table
     const renderRow = (label, value) => (
         <div className="row-seperator">
             <span>{label}</span>
@@ -100,10 +101,11 @@ export const renderShareStatistics = (stock) => {
         </div>
     );
 
+    // Return Container for Unloaded Items
     if (!stock) {
         return (
             <div className="block-container row-container-empty ">
-                <div className="row-seperator empty">
+                <div className="row-seperator">
                     <span>—</span>
                     <span>—</span>
                 </div>
@@ -111,6 +113,7 @@ export const renderShareStatistics = (stock) => {
         );
     }
 
+    // Return Container for Share Statistics Section
     return (  
         <div className="block-container">
             <div className='split-table-container'>
@@ -133,19 +136,22 @@ export const renderShareStatistics = (stock) => {
     );
 };
 
-// Render General Dividends Box
+
+// Render Dividends Box
 export const renderDividends = (stock) => {
+    // Renders row for table
     const renderRow = (label, value) => (
         <div className="row-seperator">
             <span>{label}</span>
             <span>{value || '—'}</span>
         </div>
     );
-
+    
+    // Return Container for Unloaded Items
     if (!stock) {
         return (
             <div className="block-container row-container-empty ">
-                <div className="row-seperator empty">
+                <div className="row-seperator">
                     <span>—</span>
                     <span>—</span>
                 </div>
@@ -153,6 +159,7 @@ export const renderDividends = (stock) => {
         );
     }
 
+    // Return Container for Dividends Section
     return (
         <div className="block-container">
             <div className='split-table'>
@@ -167,7 +174,7 @@ export const renderDividends = (stock) => {
 };
 
 
-// Render Table
+// Component renders selected table using input data
 export const renderComponent = (data, renderFunction) => {
     const paddedData = [...data];
 
@@ -182,7 +189,7 @@ export const renderComponent = (data, renderFunction) => {
 // Gets all necessary data for the Details Page 
 export const fetchSpecificStock = async (apiBaseUrl, symbol) => {
     try {
-        
+        // Checks if stock is valid
         const response = await axios.get(`${apiBaseUrl}/stock/list/`);
         const stockSymbols = response.data;
         const stockInfo = [];
@@ -191,16 +198,9 @@ export const fetchSpecificStock = async (apiBaseUrl, symbol) => {
             
             try {
                 
+                // Will calculate neccesary Data
                 const overviewResponse = await axios.get(`${apiBaseUrl}/stock/overview/${symbol}/`);
-                const intradayResponse = await axios.get(`${apiBaseUrl}/stock/intraday/latest/${symbol}/`); // Use the new endpoint
-                const historicalResponse = await axios.get(`${apiBaseUrl}/stock/historical/latest/${symbol}/`);
-                
                 const overviewData =  overviewResponse.data.fields;
-                const historicalData = historicalResponse.data.fields;
-                const intradayData = intradayResponse.data.fields; // Assuming the endpoint returns a single object now
-                
-                const change = parseFloat(intradayData.close) - parseFloat(historicalData.open);
-                const percentChange = (change / parseFloat(historicalData.open)) * 100;
 
                 const data_obj = {
                     name: overviewData.name,
@@ -249,10 +249,6 @@ export const fetchSpecificStock = async (apiBaseUrl, symbol) => {
                     shares_outstanding: formatPrice(overviewData.shares_outstanding),
                     dividend_date: overviewData.dividend_date,
                     ex_dividend_date: overviewData.ex_dividend_date,
-                    price: intradayData.close,
-                    change: change.toFixed(2),
-                    percentChange: percentChange.toFixed(2),
-                    volume: historicalData.volume
                 };
 
                 stockInfo.push(data_obj);
