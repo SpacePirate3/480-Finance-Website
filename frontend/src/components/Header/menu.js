@@ -160,7 +160,7 @@ const Menu = () => {
                         </div>
                         <div className="all-stocks-section">
                             <div className="table-menu">
-                            {renderTableRowsWithDataPadding(topLosers, renderTableRow, 15)}
+                                {renderTableRowsWithDataPadding(stocks, renderTableRow, 15)}
                             </div>
                         </div>
                     </div>
