@@ -165,7 +165,7 @@ function DetailedGraph({symbol = 'AMZN'}) {
 
     return (
 
-        <div className="graph-container">
+        <div className="general-graph-component graph-container">
             <div className='grid-container-graph'>
                 <div>
                     <div className="graph-title">
