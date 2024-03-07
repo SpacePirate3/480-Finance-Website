@@ -6,7 +6,7 @@
     margin: 110px 10px 10px  10px;
     overflow: hidden; /* Add this to ensure no overflow */
 }
-/* Drid layout */
+/* Grid layout */
 .grid-container-graph {
     padding: 20px;
     display: grid; /* Use grid layout */
@@ -16,7 +16,6 @@
 }
 /* Graph container */
 .graph-container {
-    
     padding: 10px 10px 10px 20px;
     display: flex;
     flex-direction: column; /* Display items in a column */
