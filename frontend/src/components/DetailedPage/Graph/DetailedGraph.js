@@ -66,7 +66,7 @@ function DetailedGraph({symbol = 'AMZN'}) {
     };
 
     
-    const buildChart = async ( type="line", period= null, version="historical" ) => {
+    const buildChart = async ( type="candlestick", period= null, version="historical" ) => {
         // If a Current Chart exist, it is removed
         if (series.current !== null) {
             chart.current.removeSeries(series.current);
