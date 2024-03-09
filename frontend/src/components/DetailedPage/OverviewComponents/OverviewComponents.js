@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { apiObject } from '../../HomePage/Utility';
 import './OverviewComponents.css'
 
 // Render General Income Box
@@ -190,7 +191,7 @@ export const renderComponent = (data, renderFunction) => {
 export const fetchSpecificStock = async (apiBaseUrl, symbol) => {
     try {
         // Checks if stock is valid
-        const response = await axios.get(`${apiBaseUrl}/stock/list/`);
+        const response = await apiObject.get(`${apiBaseUrl}/stock/list/`);
         const stockSymbols = response.data;
         const stockInfo = [];
         
@@ -199,7 +200,7 @@ export const fetchSpecificStock = async (apiBaseUrl, symbol) => {
             try {
                 
                 // Will calculate neccesary Data
-                const overviewResponse = await axios.get(`${apiBaseUrl}/stock/overview/${symbol}/`);
+                const overviewResponse = await apiObject.get(`${apiBaseUrl}/stock/overview/${symbol}/`);
                 const overviewData =  overviewResponse.data.fields;
 
                 const data_obj = {

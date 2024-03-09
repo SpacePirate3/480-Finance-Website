@@ -4,6 +4,7 @@ import '../Utility.css';
 import { renderTableRow, fetchSpecificIndexes } from '../Utility';
 import { createChart } from 'lightweight-charts';
 import axios from 'axios';
+import { apiObject } from '../Utility';
 
 function MarketSummary() {
     const apiBaseUrl = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000/api';
@@ -133,7 +134,7 @@ function MarketSummary() {
 
 
     const fetchDataForSeries = async (apiBaseUrl, symbol, series) => {
-        const response = await axios.get(`${apiBaseUrl}/stock/chart/line/intraday/${symbol}/`);
+        const response = await apiObject.get(`${apiBaseUrl}/stock/chart/line/intraday/${symbol}/`);
         const data = response.data.map(item => item.fields);
         const chartData = data.map(datapoint => {
             const datetime = Date.parse(datapoint.date) / 1000;
