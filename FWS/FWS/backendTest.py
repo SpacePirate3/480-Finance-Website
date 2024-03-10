@@ -120,6 +120,42 @@ class TestEnvironment(unittest.TestCase):
                     # Check if the time difference is approximately 2 minutes
                     self.assertLessEqual(time_difference, timedelta(minutes=2), f'{prev_entry_date_str} is more than 2 minutes from {entry_date_str} in request for {stock}')
         
+    
+
+    def test_api_stockOverview(self):
+        
+        for stock_symbol in self.stocks:
+            resp = requests.get(self.api + f"stock/overview/{stock_symbol}/")
+
+            # Check HTTP status code
+            self.assertEqual(resp.status_code, 200)
+
+            # Check the structure of the response
+            expected_keys = ['model', 'pk', 'fields']
+            self.assertEqual(list(resp.json().keys()), expected_keys)
+
+            # Check the fields in the response
+            fields = resp.json()['fields']
+
+            expected_fields = {
+                "symbol", "asset_type", "name", "description", "cik", "exchange", "currency", "country", "sector",
+                "industry", "address", "fiscal_year_end", "latest_quarter", "market_capitalization", "ebitda",
+                "pe_ratio", "peg_ratio", "book_value", "dividend_per_share", "dividend_yield", "eps",
+                "revenue_per_share_ttm", "profit_margin", "operating_margin_ttm", "return_on_assets_ttm",
+                "return_on_equity_ttm", "revenue_ttm", "gross_profit_ttm", "diluted_eps_ttm",
+                "quarterly_earnings_growth_yoy", "quarterly_revenue_growth_yoy", "analyst_target_price",
+                "trailing_pe", "forward_pe", "price_to_sales_ratio_ttm", "price_to_book_ratio",
+                "ev_to_revenue", "ev_to_ebitda", "beta", "week_52_high", "week_52_low", "day_50_moving_average",
+                "day_200_moving_average", "shares_outstanding", "dividend_date", "ex_dividend_date"
+            }
+
+            self.assertSetEqual(set(fields.keys()), expected_fields)
+
+            # Add additional checks for specific data values if needed
+            # For example, check if market_capitalization is an integer, etc.
+
+            # Check the data type of market_capitalization
+            self.assertIsInstance(fields["market_capitalization"], int)
 
    
 
