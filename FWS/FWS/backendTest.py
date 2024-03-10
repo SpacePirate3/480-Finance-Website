@@ -2,8 +2,9 @@ import unittest
 from dotenv import load_dotenv
 import os
 import requests
-from datetime import date
-from datetime import datetime
+from datetime import datetime, timedelta, timezone,date
+
+
 import mysql.connector
 import time
 
@@ -62,8 +63,63 @@ class TestEnvironment(unittest.TestCase):
             reqDate =  datetime.strptime(resp.json()['fields']['date'], '%Y-%m-%d').date() 
             today = date.today()
             self.assertLessEqual((today-reqDate).days,1)
+    def test_api_intradayLatest(self):
+        for stock in self.stocks:
+            resp = requests.get(self.api + "stock/intraday/latest/" + stock + '/')
 
-    
+            # Check HTTP status code
+            self.assertEqual(resp.status_code, 200)
+
+            # Check the initial keys in the JSON object
+            json_keys1 = list(resp.json().keys())
+            self.assertEqual(json_keys1, ['model', 'pk', 'fields'])
+
+            # Check the keys of the value mapped to fields
+            json_keys2 = list(resp.json()['fields'].keys())
+            self.assertEqual(json_keys2, ['stock_id', 'date', 'open', 'high', 'low', 'close', 'volume'])
+
+            # Check if the date is within 2 hours of the current datetime in GMT
+            req_date_str = resp.json()['fields']['date']
+            req_date = datetime.strptime(req_date_str, '%Y-%m-%dT%H:%M:%SZ').replace(tzinfo=timezone.utc)
+
+            # Calculate the time difference
+            current_datetime_utc = datetime.utcnow().replace(tzinfo=timezone.utc)
+            time_difference = current_datetime_utc - req_date
+
+            # Check if the time difference is within the allowed range (2 hours)
+            self.assertLessEqual(time_difference, timedelta(hours=2))
+
+    def test_api_intradayChart(self):
+        for stock in self.stocks:
+            resp = requests.get(self.api + f"stock/chart/line/intraday/{stock}/")
+
+            # Check HTTP status code
+            self.assertEqual(resp.status_code, 200)
+
+            # Check that it returns more than 50 entries
+            self.assertGreater(len(resp.json()), 50)
+
+            # Check the formatting of the first 10 entries and spacing between 1 minute of each other
+            for i in range(10):
+                entry = resp.json()[i]['fields']
+
+                # Check keys in each entry
+                entry_keys = list(entry.keys())
+                self.assertEqual(entry_keys, ['stock_id', 'date', 'open', 'high', 'low', 'close', 'volume'])
+
+                # Check date formatting
+                entry_date_str = entry['date']
+                entry_date = datetime.strptime(entry_date_str, '%Y-%m-%dT%H:%M:%SZ').replace(tzinfo=timezone.utc)
+
+                # Calculate the time difference between consecutive entries
+                if i > 0:
+                    prev_entry_date_str = resp.json()[i - 1]['fields']['date']
+                    prev_entry_date = datetime.strptime(prev_entry_date_str, '%Y-%m-%dT%H:%M:%SZ').replace(tzinfo=timezone.utc)
+                    time_difference = entry_date - prev_entry_date
+
+                    # Check if the time difference is approximately 2 minutes
+                    self.assertLessEqual(time_difference, timedelta(minutes=2), f'{prev_entry_date_str} is more than 2 minutes from {entry_date_str} in request for {stock}')
+        
 
    
 
