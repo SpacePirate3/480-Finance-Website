@@ -6,6 +6,7 @@ import {renderTableRow} from "../../HomePage/Utility";
 import './DetailedGraph.css';
 import { renderComponent, renderAbout, fetchSpecificStock } 
 from '../OverviewComponents/OverviewComponents.js';
+import { apiObject } from '../../HomePage/Utility';
 export default DetailedGraph;
 
 function DetailedGraph({symbol = 'AMZN'}) {
@@ -66,7 +67,7 @@ function DetailedGraph({symbol = 'AMZN'}) {
     };
 
     
-    const buildChart = async ( type="line", period= null, version="historical" ) => {
+    const buildChart = async ( type="candlestick", period= null, version="historical" ) => {
         // If a Current Chart exist, it is removed
         if (series.current !== null) {
             chart.current.removeSeries(series.current);
@@ -81,7 +82,7 @@ function DetailedGraph({symbol = 'AMZN'}) {
             if (type === "line") {
                 currentType = "line"
                 
-                var response = await axios.get(`${apiBaseUrl}/stock/chart/line/intraday/${symbol}/`)
+                var response = await apiObject.get(`${apiBaseUrl}/stock/chart/line/intraday/${symbol}/`)
                 var data = response.data.map(item => item.fields)
                 lineChart(data)
                chart.current.timeScale().applyOptions({
@@ -93,7 +94,7 @@ function DetailedGraph({symbol = 'AMZN'}) {
                 if (period === null) {
                     period = "1"
                 }
-                var response = await axios.get(`${apiBaseUrl}/stock/chart/candlestick/intraday/${symbol}/${period}/`)
+                var response = await apiObject.get(`${apiBaseUrl}/stock/chart/candlestick/intraday/${symbol}/${period}/`)
                 candlestickChart(response.data, period)
                chart.current.timeScale().applyOptions({
                     timeVisible: true,
@@ -104,7 +105,7 @@ function DetailedGraph({symbol = 'AMZN'}) {
             currentVersion = "historical"
             if (type === "line") {
                 currentType = "line"
-                var response = await axios.get(`${apiBaseUrl}/stock/chart/line/historical/${symbol}/`)
+                var response = await apiObject.get(`${apiBaseUrl}/stock/chart/line/historical/${symbol}/`)
                 var data = response.data.map(item => item.fields)
                 lineChart(data)
                chart.current.timeScale().applyOptions({
@@ -116,7 +117,7 @@ function DetailedGraph({symbol = 'AMZN'}) {
                 if (period === null) {
                     period = "1"
                 }
-                var response = await axios.get(`${apiBaseUrl}/stock/chart/candlestick/historical/${symbol}/${period}/`)
+                var response = await apiObject.get(`${apiBaseUrl}/stock/chart/candlestick/historical/${symbol}/${period}/`)
                 candlestickChart(response.data, period)
                chart.current.timeScale().applyOptions({
                     timeVisible: false,
@@ -152,7 +153,7 @@ function DetailedGraph({symbol = 'AMZN'}) {
     };
 
     const initializeOverview = async() => {
-            const stock = await axios.get(`${apiBaseUrl}/stock/overview/simple/${symbol}/`)
+            const stock = await apiObject.get(`${apiBaseUrl}/stock/overview/simple/${symbol}/`)
             let container = document.getElementById("header")
             let string = `${stock.data.name} | ${stock.data.symbol}`
             let txt = document.createTextNode(string)

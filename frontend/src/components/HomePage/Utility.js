@@ -2,6 +2,7 @@ import axios from 'axios';
 import './Utility.css'
 import { Link } from "react-router-dom";
 
+export const apiObject = axios.create()
 export const renderTableRow = (stock, index) => {
     // Check if stock data is provided
     if (!stock) {
@@ -45,15 +46,15 @@ export const renderTableRowsWithDataPadding = (data, renderRowFunc, rows=6) => {
 
 export const fetchAllStockData = async (apiBaseUrl) => {
     try {
-        const response = await axios.get(`${apiBaseUrl}/stock/list/`);
+        const response = await apiObject.get(`${apiBaseUrl}/stock/list/`);
         const stockSymbols = response.data;
         const updatedStocks = [];
 
         for (const symbol of stockSymbols) {
             try {
-                const overviewResponse = await axios.get(`${apiBaseUrl}/stock/overview/simple/${symbol}/`);
-                const intradayResponse = await axios.get(`${apiBaseUrl}/stock/intraday/latest/${symbol}/`); // Updated to use the new latest intraday data endpoint
-                const historicalResponse = await axios.get(`${apiBaseUrl}/stock/historical/latest/${symbol}/`);
+                const overviewResponse = await apiObject.get(`${apiBaseUrl}/stock/overview/simple/${symbol}/`);
+                const intradayResponse = await apiObject.get(`${apiBaseUrl}/stock/intraday/latest/${symbol}/`); // Updated to use the new latest intraday data endpoint
+                const historicalResponse = await apiObject.get(`${apiBaseUrl}/stock/historical/latest/${symbol}/`);
 
                 // Assuming both the historical and intraday latest endpoints return a single object directly accessible
                 const latestHistorical = historicalResponse.data.fields;
@@ -91,9 +92,9 @@ export const fetchSpecificIndexes = async (apiBaseUrl, symbols) => {
 
         for (const symbol of symbols) {
             try {
-                const overviewResponse = await axios.get(`${apiBaseUrl}/stock/overview/simple/${symbol}/`);
-                const intradayResponse = await axios.get(`${apiBaseUrl}/stock/intraday/latest/${symbol}/`); // Use the new endpoint
-                const historicalResponse = await axios.get(`${apiBaseUrl}/stock/historical/latest/${symbol}/`);
+                const overviewResponse = await apiObject.get(`${apiBaseUrl}/stock/overview/simple/${symbol}/`);
+                const intradayResponse = await apiObject.get(`${apiBaseUrl}/stock/intraday/latest/${symbol}/`); // Use the new endpoint
+                const historicalResponse = await apiObject.get(`${apiBaseUrl}/stock/historical/latest/${symbol}/`);
 
                 const historicalData = historicalResponse.data.fields;
                 const intradayData = intradayResponse.data.fields; // Assuming the endpoint returns a single object now

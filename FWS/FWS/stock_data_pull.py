@@ -1,6 +1,7 @@
 from dotenv import load_dotenv
 import os
 import requests
+
 import mysql.connector
 import time
 
@@ -357,11 +358,55 @@ def main():
 
     current_call_count = 0
 
+
+    #if environment variable HAS_POPULATED_DATABASE doesn't exist or is false, this code will run and set that variable to true
+    #otherwise nothing will happen
+    hasPopulatedDatabase = bool(os.environ.get('HAS_POPULATED_DATABASE', 'False'))
+    if not hasPopulatedDatabase: 
+        print("Doing initial database population for overview.")
+        for name, symbol in stocks.items():
+            print(f"Fetching data for {name} ({symbol})...")
+
+            fetch_stock_overview(symbol) # Updates stock_overview table with most-recent day.
+            #fetch_stock_data(symbol, 'historical')
+            #fetch_stock_data(symbol, 'intraday')
+
+            current_call_count += 1  # Increment by the number of calls made
+
+            # After every 14 calls, pause for 60 seconds
+            if current_call_count >= 15:
+                print("60 second pause (API call limits)")
+                time.sleep(60)
+                current_call_count = 0  # Reset call count
+        
+    
+    #if environment variable HAS_POPULATED_DATABASE doesn't exist or is false, this code will run and set that variable to true
+    #otherwise nothing will happen
+    hasPopulatedDatabase = bool(os.environ.get('HAS_POPULATED_DATABASE', 'False'))
+    if not hasPopulatedDatabase: 
+        print("Doing initial database population for historical.")
+        for name, symbol in stocks.items():
+            print(f"Fetching data for {name} ({symbol})...")
+
+            #fetch_stock_overview(symbol) # Updates stock_overview table with most-recent day.
+            fetch_stock_data(symbol, 'historical')
+            #fetch_stock_data(symbol, 'intraday')
+
+            current_call_count += 1  # Increment by the number of calls made
+
+            # After every 14 calls, pause for 60 seconds
+            if current_call_count >= 15:
+                print("60 second pause (API call limits)")
+                time.sleep(60)
+                current_call_count = 0  # Reset call count
+        os.environ['HAS_POPULATED_DATABASE'] = str(True)
+
+
     for name, symbol in stocks.items():
         print(f"Fetching data for {name} ({symbol})...")
 
-        fetch_stock_overview(symbol) # Updates stock_overview table with most-recent day.
-        fetch_stock_data(symbol, 'historical')
+        #fetch_stock_overview(symbol) # Updates stock_overview table with most-recent day.
+        #fetch_stock_data(symbol, 'historical')
         fetch_stock_data(symbol, 'intraday')
 
         current_call_count += 1  # Increment by the number of calls made
