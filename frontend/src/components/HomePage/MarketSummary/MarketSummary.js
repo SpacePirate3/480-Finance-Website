@@ -4,6 +4,7 @@ import '../Utility.css';
 import { renderTableRow, fetchSpecificIndexes } from '../Utility';
 import { createChart } from 'lightweight-charts';
 import axios from 'axios';
+import { apiObject } from '../Utility';
 
 function MarketSummary() {
     const apiBaseUrl = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000/api';
@@ -23,6 +24,7 @@ function MarketSummary() {
         setCurrentTime(formattedDateTime);
     };
 
+
     const fetchData = async () => {
         const updatedIndexes = await fetchSpecificIndexes(apiBaseUrl, specificSymbols);
         setIndexes(updatedIndexes);
@@ -36,6 +38,7 @@ function MarketSummary() {
         // Set intervals for periodic data updates
         const dataFetchInterval = setInterval(fetchData, 60000);
         const timeInterval = setInterval(updateTime, 1000);
+
         updateTime(); // Initialize immediately
 
         // Event listeners for responsive chart
@@ -69,6 +72,8 @@ function MarketSummary() {
         for (let i = 0; i < specificSymbols.length; i++) {
             await fetchDataForSeries(apiBaseUrl, specificSymbols[i], seriesRef.current[i]);
         }
+        const logicalRange = chartRef.current.timeScale().getVisibleLogicalRange()
+        chartRef.current.timeScale().setVisibleLogicalRange({from:logicalRange.to-30, to:logicalRange.to})
     };
 
     const fetchDataForSeries = async (apiBaseUrl, symbol, series) => {
@@ -93,7 +98,7 @@ function MarketSummary() {
         };
         const chart = createChart(container, chartOptions);
         chartRef.current = chart;
-
+        chart.timeScale().applyOptions({timeVisible: true, ticksVisible: true, fixRightEdge: true})
         specificSymbols.forEach((symbol, index) => {
             const series = chart.addAreaSeries({
                 lineColor: colors[index],
@@ -105,6 +110,7 @@ function MarketSummary() {
         });
 
         fetchDataForAllSeries(); // Initial fetch for all series
+
     };
 
     const handleMouseEnter = (index) => {

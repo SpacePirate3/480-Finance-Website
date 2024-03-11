@@ -292,7 +292,7 @@ def intraday_update():
         current_call_count += 1  # Increment by the number of calls made
 
         # After every 15 calls, pause for 60 seconds
-        if current_call_count >= 15:
+        if current_call_count > 15:
             print("60 second pause (API call limits)")
             time.sleep(60)
             current_call_count = 0  # Reset call count
@@ -320,15 +320,13 @@ def daily_update():
 
     for name, symbol in stocks.items():
         print(f"Fetching data for {name} ({symbol})...")
-
         fetch_stock_overview(symbol) # Updates stock_overview table with most-recent day.
+        current_call_count += 1  # Increment by the number of calls made
     time.sleep(60)
     for name, symbol in stocks.items():
             print(f"Fetching data for {name} ({symbol})...")
             fetch_stock_data(symbol, 'daily')  # Updates stock_overview table with most-recent day.
-
-
-        current_call_count += 1  # Increment by the number of calls made
+            current_call_count += 1  # Increment by the number of calls made
 
         # After every 15 calls, pause for 60 seconds
 
