@@ -21,6 +21,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
+    path('admin/', admin.site.urls),
     path('api/stock/overview/<str:symbol>/', views.stock_overview, name='stock_overview'),
     path('api/stock/overview/simple/<str:symbol>/', views.stock_overview_simple, name='stock_overview_simple'),
     path('api/stock/historical/<str:symbol>/', views.historical_data, name='historical_data'),

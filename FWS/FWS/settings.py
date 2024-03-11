@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'corsheaders',
+    'django_apscheduler',
+    'app',
 ]
 
 MIDDLEWARE = [
@@ -59,6 +61,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'FWS.urls'
+
+APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
 
 TEMPLATES = [
     {

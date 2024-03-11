@@ -107,9 +107,11 @@ export const fetchSpecificIndexes = async (apiBaseUrl, symbols) => {
                         name: overviewResponse.data.name,
                         symbol: overviewResponse.data.symbol,
                         price: intradayData.close,
+                        open: intradayData.open,
                         change: change.toFixed(2),
                         percentChange: percentChange.toFixed(2),
                         volume: historicalData.volume,
+                        time: intradayData.date
                     };
 
                     updatedIndexes.push(updatedIndex);

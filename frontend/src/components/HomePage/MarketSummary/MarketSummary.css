@@ -11,6 +11,13 @@
     overflow: hidden; /* Add this to ensure no overflow */
 }
 
+.update-time-label {
+    text-align: center;
+    margin-top: 5px;
+    font-size: 12px;
+    color: #666;
+}
+
 .home-stock-chart {
     flex-grow: 1; /* Allow the chart to fill the container */
     width: 100%; /* Fill the width of its parent */
