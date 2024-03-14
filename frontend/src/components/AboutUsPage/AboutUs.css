@@ -1,0 +1,75 @@
+.about-us-container {
+    margin-top: 200px; /* Move container down from header */
+    padding: 20px;
+    background-color: #232A31; /* Light background color */
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 0 10px 232A31(51, 67, 47); /* Box shadow for depth */
+    display: flex; /* Use flexbox to center content */
+    flex-direction: column; /* Align children vertically */
+    align-items: center; /* Center children horizontally */
+    text-align: center; /* Center text content */
+}
+
+.about-us-container h1 {
+    font-size: 32px;
+    margin-bottom: 20px;
+    margin-top: 20px; /* Add margin on top */
+    font-family: 'Inter', sans-serif;
+    font-weight: bold;
+    color: #76fe8a; /* Dark text color */
+}
+
+.project-description {
+    margin-bottom: 20px;
+    color: #ffffff; /* Medium-dark text color */
+}
+
+.project-description p {
+    margin-bottom: 10px;
+}
+
+.people-container {
+    display: flex;
+    flex-wrap: wrap; /* Allow wrapping */
+    justify-content: center; /* Center items horizontally */
+}
+
+.person-card {
+    width: 200px; /* Set the width to your desired value */
+    height: 150px; /* Set the height to be taller than the width */
+    margin: 20px;
+    background-color: #3d3d3d; /* White background */
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.502); /* Box shadow for depth */
+    transition: transform 0.3s ease-in-out;
+}
+
+.person-card:hover {
+    transform: translateY(-5px); /* Move card up slightly on hover */
+}
+
+.person-content {
+    padding: 20px;
+}
+
+.person-content h3 {
+    margin-bottom: 10px;
+    font-size: 24px;
+    font-family: 'Inter', sans-serif;
+    font-weight: bold;
+    color: #4bdc61; /* Dark text color */
+}
+
+.person-content a {
+    display: block;
+    color: #007bff; /* Link color */
+    text-decoration: none;
+    font-size: 16px;
+    font-family: 'Inter', sans-serif;
+    font-weight: bold;
+    transition: color 0.3s ease-in-out;
+}
+
+.person-content a:hover {
+    color: #00b351; /* Darker link color on hover */
+}

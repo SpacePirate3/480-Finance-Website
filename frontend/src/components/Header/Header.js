@@ -3,6 +3,8 @@ import {Link} from "react-router-dom";
 import React, { useState } from 'react';
 import './Header.css';
 import Menu from './menu';
+import AboutUs from '../AboutUsPage/AboutUs.js';
+
 
 function Header() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -29,7 +31,7 @@ function Header() {
             </Link>
             <div className="buttons">
                 <Link to={"/"}><div className="text homeButton">HOME</div></Link>
-                <div className="text homeButton">ABOUT US</div>
+                <Link to={"/about"}><div className="text homeButton">ABOUT US</div></Link> {/* Link to About Us page */}
                 {/* Attach toggleMenu function to onClick event */}
                 <div className="stock-contaner-menu" onClick={toggleMenu}>
                     <div className="stock-line-menu"></div>

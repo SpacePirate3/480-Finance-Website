@@ -11,6 +11,7 @@ import Stocks from './HomePage/PopularStocks/PopularStocks'
 import {createChart} from "lightweight-charts"
 import axios from "axios"
 import DetailedPage from './DetailedPage/DetailedPage'
+import AboutUs from './AboutUsPage/AboutUs';
 function App() {
 
     useEffect(() => {
@@ -22,6 +23,7 @@ function App() {
         <Routes>
           <Route path="/" element={<RealHome/>}/>
           <Route path="/details/:stockSymbol" element={<DetailedPage/>}/>
+          <Route path="/about" element={<AboutUs />} />
         </Routes>
     </>
 
