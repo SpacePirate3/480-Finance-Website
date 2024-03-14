@@ -24,7 +24,7 @@ function StockInfo() {
         const interval = setInterval(fetchData, 60000); // Fetch data every minute
         
         return () => clearInterval(interval);
-    }, []);
+    }, [stockSymbol]);
 
     // Structures Page's Components
     return (

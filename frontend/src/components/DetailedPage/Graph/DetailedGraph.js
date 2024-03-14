@@ -22,7 +22,9 @@ function DetailedGraph({symbol = 'AMZN'}) {
     useEffect(() => {
         // Fetches Data for Company
         fetchCompanyData();
-
+        if (chart.current !== null) {
+            window.location.reload()
+        }
         // Chart Building
         // Updates Chart
         const chartOptions = {
@@ -50,7 +52,7 @@ function DetailedGraph({symbol = 'AMZN'}) {
         return () => {
             window.removeEventListener('resize', handleResize);
         };
-    }, []);
+    }, [symbol]);
 
     // Trigger to update page's components
     const fetchCompanyData = async () => {

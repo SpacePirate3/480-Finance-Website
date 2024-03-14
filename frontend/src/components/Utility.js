@@ -17,7 +17,7 @@ export const renderTableRow = (stock, index) => {
     }
 
     return (
-        <Link to={`./Details/${stock.symbol}`} style={{textDecoration: 'none', color:'black'}}>
+        <Link to={`/Details/${stock.symbol}`} style={{textDecoration: 'none', color:'black'}}>
         <div className="home-row" key={index}>
             <span>{stock.symbol || '—'}</span>
             <span>{stock.price || '—'}</span>
@@ -31,7 +31,6 @@ export const renderTableRow = (stock, index) => {
         </Link>
     );
 };
-
 export const renderTableRowsWithDataPadding = (data, renderRowFunc, rows=6) => {
     const rowsToRender = rows;
     const paddedData = [...data];
