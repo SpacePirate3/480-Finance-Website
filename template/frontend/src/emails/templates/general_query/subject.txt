@@ -1,1 +1,0 @@
-DjangoMango - General query
