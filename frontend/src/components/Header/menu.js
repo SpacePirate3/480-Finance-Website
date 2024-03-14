@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import { renderTableRow, renderTableRowsWithDataPadding, fetchAllStockData, formatVolume} from '../HomePage/Utility';
+import { renderTableRow, renderTableRowsWithDataPadding, fetchAllStockData, formatVolume} from '../Utility';
 
 import './menu.css'; 
 

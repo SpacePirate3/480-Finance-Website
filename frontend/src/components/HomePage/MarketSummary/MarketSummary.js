@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './MarketSummary.css';
-import '../Utility.css';
-import { renderTableRow, fetchSpecificIndexes } from '../Utility';
+import { renderTableRow, fetchSpecificIndexes } from '../../Utility';
 import { createChart } from 'lightweight-charts';
 import axios from 'axios';
-import { apiObject } from '../Utility';
+import { apiObject } from '../../Utility';
 
 function MarketSummary() {
     const apiBaseUrl = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000/api';

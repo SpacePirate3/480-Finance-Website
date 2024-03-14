@@ -2,11 +2,11 @@ import React, {useState, useEffect, useRef} from 'react';
 import {createChart} from "lightweight-charts";
 import axios from "axios";
 import {render} from "@testing-library/react";
-import {renderTableRow} from "../../HomePage/Utility";
+import {renderTableRow} from "../../Utility.js";
 import './DetailedGraph.css';
 import { renderComponent, renderAbout, fetchSpecificStock } 
 from '../OverviewComponents/OverviewComponents.js';
-import { apiObject } from '../../HomePage/Utility';
+import { apiObject } from '../../Utility.js';
 export default DetailedGraph;
 
 function DetailedGraph({symbol = 'AMZN'}) {

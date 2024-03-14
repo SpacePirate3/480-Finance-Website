@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { apiObject } from '../../HomePage/Utility';
+import { apiObject } from '../../Utility';
 import './OverviewComponents.css'
 
 // Render General Income Box
